@@ -9,16 +9,17 @@ namespace advent2024.Days
         public static void SolvePart1()
         {
             var lines = File.ReadAllLines(InputFile);
+
             int result = 0;
 
             int[] l = new int[lines.Length];
             int[] r = new int[lines.Length];
             for (int i = 0; i < lines.Length; i++)
             {
-                string[] nums = lines[i].Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] nums = lines[i].Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                l[i] = (int.Parse(nums[0]));
-                r[i] = (int.Parse(nums[1]));
+                l[i] = int.Parse(nums[0]);
+                r[i] = int.Parse(nums[1]);
             }
             Array.Sort(l);
             Array.Sort(r);
@@ -39,7 +40,7 @@ namespace advent2024.Days
             int[] r = new int[lines.Length];
             for (int i = 0; i < lines.Length; i++)
             {
-                string[] nums = lines[i].Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] nums = lines[i].Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                 l[i] = (int.Parse(nums[0]));
                 r[i] = (int.Parse(nums[1]));
