@@ -28,9 +28,7 @@ namespace advent2024.Days
                 {
                     result++;
                 }
-
             }
-
             Console.WriteLine($"2*1 -- {result}");
         }
 
