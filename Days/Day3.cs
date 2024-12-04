@@ -8,13 +8,6 @@ namespace advent2024.Days
     {
         private static readonly string InputFile = @"C:\aoc\2024\day3\input.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day3\output.txt";
-        public enum SequenceMode
-        {
-            Increase,
-            Decrease,
-            None
-        }
-
         public static void SolvePart1()
         {
             File.WriteAllText(OutputFile, string.Empty);
