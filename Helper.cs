@@ -217,7 +217,27 @@ namespace advent2024
             }
             return 0;
         }
+
+        internal static void PrintMap(char[,] map)
+        {
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    Console.Write(map[i, j]);
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public enum Direction
+        {
+            Up,
+            Down,
+            Left,
+            Right,
+            Invalid
+        }
+
     }
-
-
 }
