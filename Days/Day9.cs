@@ -26,7 +26,7 @@ namespace advent2024.Days
             File.WriteAllText(OutputFile, string.Empty);
             string line = File.ReadAllText(InputFile);
             List<int> blocks = GetBlocksFromLine(line);
-            File.AppendAllLines(OutputFile, blocks.Select(x => x == -1 ? "." : x.ToString()));
+            //File.AppendAllLines(OutputFile, blocks.Select(x => x == -1 ? "." : x.ToString()));
             blocks = CompactBlocks(blocks, true);
             long result = GetChecksum(blocks);
             Console.WriteLine($"9*2 -- {result}");
