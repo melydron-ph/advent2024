@@ -6,7 +6,7 @@ using System.Globalization;
 
 namespace advent2024.Days
 {
-    public static class Day9
+    public static class Day09
     {
         private static readonly string InputFile = @"C:\aoc\2024\day9\input.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day9\output.txt";
@@ -18,7 +18,7 @@ namespace advent2024.Days
             List<int> blocks = GetBlocksFromLine(line);
             blocks = CompactBlocks(blocks);
             long result = GetChecksum(blocks);
-            Console.WriteLine($"9*1 -- {result}");
+            Console.WriteLine($"09*1 -- {result}");
 
         }
         public static void SolvePart2()
@@ -29,7 +29,7 @@ namespace advent2024.Days
             //File.AppendAllLines(OutputFile, blocks.Select(x => x == -1 ? "." : x.ToString()));
             blocks = CompactBlocks(blocks, true);
             long result = GetChecksum(blocks);
-            Console.WriteLine($"9*2 -- {result}");
+            Console.WriteLine($"09*2 -- {result}");
         }
 
         private static List<int> GetBlocksFromLine(string line)

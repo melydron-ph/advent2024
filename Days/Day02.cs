@@ -3,7 +3,7 @@ using static advent2024.Helper;
 
 namespace advent2024.Days
 {
-    public static class Day2
+    public static class Day02
     {
         private static readonly string InputFile = @"C:\aoc\2024\day2\input.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day2\output.txt";
@@ -29,7 +29,7 @@ namespace advent2024.Days
                     result++;
                 }
             }
-            Console.WriteLine($"2*1 -- {result}");
+            Console.WriteLine($"02*1 -- {result}");
         }
 
         public static void SolvePart2()
@@ -47,7 +47,7 @@ namespace advent2024.Days
                     result++;
                 }
             }
-            Console.WriteLine($"2*2 -- {result}");
+            Console.WriteLine($"02*2 -- {result}");
         }
 
         private static bool IsSafeReport(int[] report, bool dampener = false)

@@ -5,7 +5,7 @@ using static advent2024.Helper;
 
 namespace advent2024.Days
 {
-    public static class Day8
+    public static class Day08
     {
         private static readonly string InputFile = @"C:\aoc\2024\day8\input.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day8\output.txt";
@@ -60,7 +60,7 @@ namespace advent2024.Days
             //{
             //    Console.WriteLine(point);
             //}
-            Console.WriteLine($"8*1 -- {result}");
+            Console.WriteLine($"08*1 -- {result}");
         }
         public static void SolvePart2()
         {
@@ -121,7 +121,7 @@ namespace advent2024.Days
             //{
             //    Console.WriteLine(point);
             //}
-            Console.WriteLine($"8*2 -- {result}");
+            Console.WriteLine($"08*2 -- {result}");
         }
 
         private static void CheckAndAddLocations(Point p1, Point p2, List<Point> anticharLocations, bool part2 = false)

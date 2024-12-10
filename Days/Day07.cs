@@ -4,7 +4,7 @@ using static advent2024.Helper;
 
 namespace advent2024.Days
 {
-    public static class Day7
+    public static class Day07
     {
         private static readonly string InputFile = @"C:\aoc\2024\day7\input.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day7\output.txt";
@@ -25,7 +25,7 @@ namespace advent2024.Days
                     result += resultValue;
                 }
             }
-            Console.WriteLine($"7*1 -- {result}");
+            Console.WriteLine($"07*1 -- {result}");
         }
         public static void SolvePart2()
         {
@@ -43,7 +43,7 @@ namespace advent2024.Days
                     result += resultValue;
                 }
             }
-            Console.WriteLine($"7*2 -- {result}");
+            Console.WriteLine($"07*2 -- {result}");
         }
         internal static bool NumbersProduceValue(int[] numbers, long resultValue, bool part2 = false)
         {

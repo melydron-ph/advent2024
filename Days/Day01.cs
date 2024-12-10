@@ -2,7 +2,7 @@
 
 namespace advent2024.Days
 {
-    public static class Day1
+    public static class Day01
     {
         private static readonly string InputFile = @"C:\aoc\2024\day1\input.txt";
 
@@ -28,7 +28,7 @@ namespace advent2024.Days
             {
                 result +=  Math.Abs(l[i] - r[i]);
             }
-            Console.WriteLine($"1*1 -- {result}");
+            Console.WriteLine($"01*1 -- {result}");
         }
 
         public static void SolvePart2()
@@ -50,7 +50,7 @@ namespace advent2024.Days
             {
                 result += l[i] * r.Where(x => x == l[i]).Count();
             }
-            Console.WriteLine($"1*2 -- {result}");
+            Console.WriteLine($"01*2 -- {result}");
         }
     }
 }

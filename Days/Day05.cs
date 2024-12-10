@@ -4,7 +4,7 @@ using static advent2024.Helper;
 
 namespace advent2024.Days
 {
-    public static class Day5
+    public static class Day05
     {
         private static readonly string InputFile = @"C:\aoc\2024\day5\input.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day5\output.txt";
@@ -53,7 +53,7 @@ namespace advent2024.Days
                 if (rightOrder)
                     result += update[update.Count / 2];
             }
-            Console.WriteLine($"5*1 -- {result}");
+            Console.WriteLine($"05*1 -- {result}");
         }
         public static void SolvePart2()
         {
@@ -102,7 +102,7 @@ namespace advent2024.Days
                 }
             }
 
-            Console.WriteLine($"5*2 -- {result}");
+            Console.WriteLine($"05*2 -- {result}");
         }
 
         private static int FixedUpdateResult(List<int> update, List<(int, int)> rules)
