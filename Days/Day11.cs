@@ -15,21 +15,25 @@ namespace advent2024.Days
         public static void SolvePart1()
         {
             File.WriteAllText(OutputFile, string.Empty);
-            int result = ProcessStones(InputFile, 25);
+            string line = File.ReadAllText(InputFile);
+            List<long> stones = line.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
+            int blinks = 25;
+            int result = ProcessStones(stones, blinks);
             Console.WriteLine($"11*1 -- {result}");
 
         }
         public static void SolvePart2()
         {
             File.WriteAllText(OutputFile, string.Empty);
-            long result = ProcessStonesWithDictionary(InputFile, 75);
+            string line = File.ReadAllText(InputFile);
+            List<long> stones = line.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
+            int blinks = 75;
+            long result = ProcessStonesWithDictionary(stones, 75);
             Console.WriteLine($"11*2 -- {result}");
         }
 
-        private static int ProcessStones(string inputFile, int blinks)
+        private static int ProcessStones(List<long> stones, int blinks)
         {
-            string line = File.ReadAllText(InputFile);
-            List<long> stones = line.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
             //Console.WriteLine($"Initial: ");
             File.AppendAllText(OutputFile, $"Initial: \n");
             //Console.WriteLine(String.Join(" ", stones));
@@ -66,10 +70,8 @@ namespace advent2024.Days
             return stones.Count();
         }
 
-        private static long ProcessStonesWithDictionary(string inputFile, int blinks)
+        private static long ProcessStonesWithDictionary(List<long> stones, int blinks)
         {
-            string line = File.ReadAllText(InputFile);
-            List<long> stones = line.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
             //Console.WriteLine($"Initial: ");
             //File.AppendAllText(OutputFile, $"Initial: \n");
             //Console.WriteLine(String.Join(" ", stones));
