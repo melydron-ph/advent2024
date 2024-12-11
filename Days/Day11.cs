@@ -28,7 +28,7 @@ namespace advent2024.Days
             string line = File.ReadAllText(InputFile);
             List<long> stones = line.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
             int blinks = 75;
-            long result = ProcessStonesWithDictionary(stones, 75);
+            long result = ProcessStonesWithDictionary(stones, blinks);
             Console.WriteLine($"11*2 -- {result}");
         }
 
