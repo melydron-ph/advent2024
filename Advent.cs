@@ -29,7 +29,10 @@
 //Day09.SolvePart2();
 
 //Day10.SolvePart1();
-Day10.SolvePart2();
+//Day10.SolvePart2();
+
+Day11.SolvePart1();
+Day11.SolvePart2();
 
 Console.WriteLine("\nPress any key to exit...");
 Console.ReadKey();
