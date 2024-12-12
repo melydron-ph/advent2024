@@ -18,8 +18,10 @@ namespace advent2024.Days
             string line = File.ReadAllText(InputFile);
             List<long> stones = line.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
             int blinks = 25;
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             int result = ProcessStones(stones, blinks);
-            Console.WriteLine($"11*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"11*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
 
         }
         public static void SolvePart2()
@@ -28,8 +30,11 @@ namespace advent2024.Days
             string line = File.ReadAllText(InputFile);
             List<long> stones = line.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
             int blinks = 75;
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             long result = ProcessStonesWithDictionary(stones, blinks);
-            Console.WriteLine($"11*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"11*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
+
         }
 
         private static int ProcessStones(List<long> stones, int blinks)
