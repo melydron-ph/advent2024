@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -242,6 +243,18 @@ namespace advent2024
             }
         }
 
+        internal static void PrintMap(char[][] map)
+        {
+            for (int i = 0; i < map.Length; i++)
+            {
+                for (int j = 0; j < map[i].Length; j++)
+                {
+                    Console.Write(map[i][j]);
+                }
+                Console.WriteLine();
+            }
+        }
+
         public enum Direction
         {
             Up,
@@ -250,6 +263,5 @@ namespace advent2024
             Right,
             Invalid
         }
-
     }
 }
