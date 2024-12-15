@@ -16,6 +16,7 @@ namespace advent2024.Days
         private static int _tickRate = 50;
         public static void SolvePart1()
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
             File.WriteAllText(OutputFile, string.Empty);
             string file = File.ReadAllText(InputFile);
             string[] fileBlocks = file.Split(new string[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
@@ -98,6 +99,7 @@ namespace advent2024.Days
         }
         public static void SolvePart2()
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
             bool showStuff = true;
             File.WriteAllText(OutputFile, string.Empty);
             string file = File.ReadAllText(InputFile);
@@ -261,6 +263,7 @@ namespace advent2024.Days
 
         public static void Day15Play2()
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
             File.WriteAllText(OutputFile, string.Empty);
             string file = File.ReadAllText(InputFile);
             file = file.Replace("#", "##");

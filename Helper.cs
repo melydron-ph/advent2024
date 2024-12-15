@@ -248,7 +248,7 @@ namespace advent2024
                         {
                             if (map[i, j] != _previousMap[i, j])
                             {
-                                Console.SetCursorPosition(j, i);
+                                Console.SetCursorPosition(j*2, i);
                                 PrintDay15Char(map[i, j]);
                                 _previousMap[i, j] = map[i, j];
                             }
@@ -285,27 +285,27 @@ namespace advent2024
             {
                 case '#':
                     Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.Write('■');
+                    Console.Write("🧱");
                     break;
                 case '.':
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.Write(' ');
+                    Console.Write("  ");
                     break;
                 case '@':
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.Write('*');
+                    Console.Write("🤖");
                     break;
                 case 'O':
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write('■');
+                    Console.Write("📦");
                     break;
                 case '[':
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write('<');
+                    Console.Write("📦");
                     break;
                 case ']':
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write('>');
+                    Console.Write("📦");
                     break;
                 default:
                     Console.Write(c);
