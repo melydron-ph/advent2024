@@ -220,16 +220,51 @@ namespace advent2024
             return 0;
         }
 
-        internal static void PrintMap(char[,] map)
+        private static char[,] _previousMap;
+        internal static void PrintMap(char[,] map, bool day15 = false)
         {
-            for (int i = 0; i < map.GetLength(0); i++)
+            if (day15)
             {
-                for (int j = 0; j < map.GetLength(1); j++)
+                if (_previousMap == null)
                 {
-                    Console.Write(map[i, j]);
+                    _previousMap = new char[map.GetLength(0), map.GetLength(1)];
+                    Console.SetCursorPosition(0, 0);
+                    Console.CursorVisible = false;
+                    for (int i = 0; i < map.GetLength(0); i++)
+                    {
+                        Console.SetCursorPosition(0, i);
+                        for (int j = 0; j < map.GetLength(1); j++)
+                        {
+                            PrintDay15Char(map[i, j]);
+                            _previousMap[i, j] = map[i, j];
+                        }
+                    }
+                    return;
                 }
-                Console.WriteLine();
+                else
+                    for (int i = 0; i < map.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < map.GetLength(1); j++)
+                        {
+                            if (map[i, j] != _previousMap[i, j])
+                            {
+                                Console.SetCursorPosition(j, i);
+                                PrintDay15Char(map[i, j]);
+                                _previousMap[i, j] = map[i, j];
+                            }
+                        }
+                    }
+
             }
+            else
+                for (int i = 0; i < map.GetLength(0); i++)
+                {
+                    for (int j = 0; j < map.GetLength(1); j++)
+                    {
+                        Console.Write(map[i, j]);
+                    }
+                    Console.WriteLine();
+                }
         }
 
         internal static void PrintMap(int[,] map)
@@ -242,6 +277,41 @@ namespace advent2024
                 }
                 Console.WriteLine();
             }
+        }
+
+        private static void PrintDay15Char(char c)
+        {
+            switch (c)
+            {
+                case '#':
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.Write('■');
+                    break;
+                case '.':
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.Write(' ');
+                    break;
+                case '@':
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write('*');
+                    break;
+                case 'O':
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write('■');
+                    break;
+                case '[':
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write('<');
+                    break;
+                case ']':
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write('>');
+                    break;
+                default:
+                    Console.Write(c);
+                    break;
+            }
+            Console.ResetColor();
         }
 
         public static char[,] LinesToCharMap(string[] lines)
@@ -288,7 +358,7 @@ namespace advent2024
         {
             List<List<Point>> areas = new List<List<Point>>();
             int rows = map.GetLength(0);
-            int cols= map.GetLength(1);
+            int cols = map.GetLength(1);
             bool[,] visited = new bool[rows, cols];
             for (int i = 0; i < rows; i++)
             {
