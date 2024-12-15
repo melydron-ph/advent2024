@@ -39,12 +39,6 @@ namespace advent2024.Days
                     }
                 }
             }
-            PrintMap(map, true);
-            Console.SetCursorPosition(0, map.GetLength(0) + 1);
-            Console.WriteLine("Press any key to start...");
-            Console.ReadKey(true);
-            Console.SetCursorPosition(0, map.GetLength(0) + 1);
-            Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}ms[+/- 10]");
             string[] moveLines = fileBlocks[1].Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
             List<Direction> directions = new List<Direction>();
             for (int i = 0; i < moveLines.Length; i++)
@@ -69,6 +63,15 @@ namespace advent2024.Days
                     }
                 }
             }
+            PrintMap(map, true);
+            Console.SetCursorPosition(0, map.GetLength(0) + 1);
+            Console.WriteLine("Press any key to start...");
+            Console.ReadKey(true);
+            Console.SetCursorPosition(0, map.GetLength(0) + 1);
+            //Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}ms[+/- 10]");
+            Console.WriteLine($"GPS Total: {GetMapValue(map).ToString().PadRight(6)} [0/{directions.Count()}]");
+
+            int dirCount = 1;
             foreach (Direction direction in directions)
             {
                 while (Console.KeyAvailable)
@@ -84,12 +87,15 @@ namespace advent2024.Days
                             break;
                     }
                     Console.SetCursorPosition(0, map.GetLength(0) + 1);
-                    Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}ms[+/- 10]");
+                    //Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}ms[+/- 10]");
                 }
                 Thread.Sleep(_tickRate);
                 TryRobotMove(direction, ref startX, ref startY, map);
                 //Console.Clear();
                 PrintMap(map, true);
+                Console.SetCursorPosition(0, map.GetLength(0) + 1);
+                Console.WriteLine($"GPS Total: {GetMapValue(map).ToString().PadRight(6)} [{dirCount++}/{directions.Count()}]");
+
             }
             Console.SetCursorPosition(0, map.GetLength(0) + 3);
             int result = GetMapValue(map);
@@ -134,7 +140,7 @@ namespace advent2024.Days
                 Console.WriteLine("Press any key to start...");
                 Console.ReadKey(true);
                 Console.SetCursorPosition(0, map.GetLength(0) + 1);
-                Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}ms[+/- 10]");
+                //Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}ms[+/- 10]");
             }
             string[] moveLines = fileBlocks[1].Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
             List<Direction> directions = new List<Direction>();
@@ -160,6 +166,7 @@ namespace advent2024.Days
                     }
                 }
             }
+            int dirCount = 1;
             foreach (Direction direction in directions)
             {
                 while (Console.KeyAvailable)
@@ -177,7 +184,7 @@ namespace advent2024.Days
                     if (showStuff)
                     {
                         Console.SetCursorPosition(0, map.GetLength(0) + 1);
-                        Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}ms[+/- 10]");
+                        //Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}ms[+/- 10]");
                     }
                 }
                 if (showStuff)
@@ -186,13 +193,14 @@ namespace advent2024.Days
                 if (showStuff)
                 {
                     PrintMap(map, true);
+                    Console.SetCursorPosition(0, map.GetLength(0) + 1);
+                    Console.WriteLine($"GPS Total: {GetMapValue(map).ToString().PadRight(6)} [{dirCount++}/{directions.Count()}]");
+
                 }
             }
-            if (showStuff)
-                Console.SetCursorPosition(0, map.GetLength(0) + 3);
             int result = GetMapValue(map);
             if (showStuff)
-                Console.SetCursorPosition(0, map.GetLength(0) + 5);
+                Console.SetCursorPosition(0, map.GetLength(0) + 3);
             Console.WriteLine($"15*2 -- {result}");
         }
 

@@ -248,7 +248,7 @@ namespace advent2024
                         {
                             if (map[i, j] != _previousMap[i, j])
                             {
-                                Console.SetCursorPosition(j*2, i);
+                                Console.SetCursorPosition(j*2, i); //j*2 for emoji, otherwise switch to j
                                 PrintDay15Char(map[i, j]);
                                 _previousMap[i, j] = map[i, j];
                             }

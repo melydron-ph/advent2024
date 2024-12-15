@@ -44,9 +44,9 @@
 //Day14.SolvePart2();
 
 //Day15.SolvePart1();
-//Day15.SolvePart2();
+Day15.SolvePart2();
 //Day15.Day15Play();
-Day15.Day15Play2();
+//Day15.Day15Play2();
 
 Console.WriteLine("\nPress any key to exit...");
 Console.ReadKey();
