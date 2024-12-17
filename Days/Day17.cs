@@ -9,7 +9,7 @@ namespace advent2024.Days
 {
     public static class Day17
     {
-        private static readonly string InputFile = @"C:\aoc\2024\day17\input.txt";
+        private static readonly string InputFile = @"C:\aoc\2024\day17\test.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day17\output.txt";
         public static void SolvePart1()
         {
@@ -39,7 +39,7 @@ namespace advent2024.Days
                 if (result.Count() != programCount)
                 {
                     List<long> subSeq = t.Program.Skip(programCount - result.Count()).ToList();
-                    //File.AppendAllText(OutputFile, $"[{init}] -- {String.Join(',', result)}\n");
+                    File.AppendAllText(OutputFile, $"[{init}] -- {String.Join(',', result)}\n");
                     if (result.SequenceEqual(subSeq))
                     {
                         init = init * 8;
