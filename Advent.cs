@@ -40,8 +40,8 @@
 //Day13.SolvePart1();
 //Day13.SolvePart2();
 
-Day14.SolvePart1();
-//Day14.SolvePart2();
+//Day14.SolvePart1();
+Day14.SolvePart2();
 
 //Day15.SolvePart1();
 //Day15.SolvePart2();

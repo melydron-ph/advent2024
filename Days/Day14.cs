@@ -25,7 +25,6 @@ namespace advent2024.Days
                 mapCols = 11;
             }
             int seconds = 100;
-
             for (int i = 0; i < seconds; i++)
             {
                 foreach (Robot robot in robots)
@@ -36,14 +35,54 @@ namespace advent2024.Days
             List<int> robotsInQuadrants = RobotsInQuadrants(robots, mapRows, mapCols);
             int result = robotsInQuadrants[1] * robotsInQuadrants[2] * robotsInQuadrants[3] * robotsInQuadrants[4];
             Console.WriteLine($"14*1 -- {result}");
-
         }
         public static void SolvePart2()
         {
             File.WriteAllText(OutputFile, string.Empty);
-            string[] lines = File.ReadAllLines(InputFile);
-            int result = 0;
-            Console.WriteLine($"14*2 -- {result}");
+            List<Robot> robots = GetRobotsFromFile(InputFile);
+
+            int mapRows = 103;
+            int mapCols = 101;
+            if (InputFile.Contains("test.txt"))
+            {
+                mapRows = 7;
+                mapCols = 11;
+            }
+            int seconds = 100000;
+            bool print = true;
+            if (print)
+            {
+                Console.Clear();
+                Console.CursorVisible = false;
+                for (int y = 0; y < mapRows; y++)
+                {
+                    for (int x = 0; x < mapCols; x++)
+                    {
+                        Console.Write(" ");
+                    }
+                    Console.WriteLine();
+                }
+                Console.ReadKey();
+            }
+            for (int i = 1; i < seconds; i++)
+            {
+                foreach (Robot robot in robots)
+                {
+                    robot.Move(mapRows, mapCols);
+                }
+                RobotDistribution robDistr = new RobotDistribution(robots, mapRows, mapCols);
+                int check = 15;
+                if (robDistr.PerRow.Any(count => count > check) && robDistr.PerCol.Any(count => count > check))
+                {
+                    if (print)
+                    {
+                        PrintRobots(robots, mapRows, mapCols);
+                        Console.SetCursorPosition(0, mapRows + 1);
+                    }
+                    Console.WriteLine($"14*2 - {i}");
+                    break;
+                }
+            }
         }
 
         private static List<Robot> GetRobotsFromFile(string inputFile)
@@ -130,40 +169,58 @@ namespace advent2024.Days
             return robotsinQuadrants;
         }
 
-        public static void PrintQuadrantGrid(List<Robot> robots, int mapRows, int mapCols)
+        public class RobotDistribution
         {
-            int midRow = mapRows / 2;
-            int midCol = mapCols / 2;
+            public List<int> PerRow { get; }
+            public List<int> PerCol { get; }
 
-            var robotCounts = new Dictionary<Point, int>();
+            public RobotDistribution(List<Robot> robots, int mapRows, int mapCols)
+            {
+                PerRow = new List<int>(new int[mapRows]);
+                PerCol = new List<int>(new int[mapCols]);
+
+                foreach (Robot robot in robots)
+                {
+                    PerRow[robot.Position.Y]++;
+                    PerCol[robot.Position.X]++;
+                }
+            }
+        }
+
+
+        private static Dictionary<Point, int> _currentPositions = new Dictionary<Point, int>();
+        public static void PrintRobots(List<Robot> robots, int mapRows, int mapCols)
+        {
+            var newPositions = new Dictionary<Point, int>();
+
             foreach (var robot in robots)
             {
-                var position = robot.Position;
-                if (!robotCounts.ContainsKey(position))
-                    robotCounts[position] = 0;
-                robotCounts[position]++;
+                if (!newPositions.ContainsKey(robot.Position))
+                    newPositions[robot.Position] = 0;
+                newPositions[robot.Position]++;
             }
 
-            Console.WriteLine($"Grid {mapRows}x{mapCols} with quadrants:");
-            for (int y = 0; y < mapRows; y++)
+            foreach (var oldPos in _currentPositions)
             {
-                for (int x = 0; x < mapCols; x++)
+                if (!newPositions.ContainsKey(oldPos.Key))
                 {
-                    var position = new Point(x, y);
-                    int robotCount = robotCounts.ContainsKey(position) ? robotCounts[position] : 0;
-
-                    if ((mapCols % 2 != 0 && x == midCol) ||
-                        (mapRows % 2 != 0 && y == midRow))
-                    {
-                        Console.Write(robotCount > 0 ? robotCount.ToString() : "+");
-                    }
-                    else
-                    {
-                        Console.Write(robotCount > 0 ? robotCount.ToString() : ".");
-                    }
+                    Console.SetCursorPosition(oldPos.Key.X, oldPos.Key.Y);
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.Write(" ");
                 }
-                Console.WriteLine();
             }
+
+            foreach (var pos in newPositions)
+            {
+                if (pos.Key.X < mapCols && pos.Key.Y < mapRows)
+                {
+                    Console.SetCursorPosition(pos.Key.X, pos.Key.Y);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write('*');
+                }
+            }
+            Console.ForegroundColor = ConsoleColor.Gray;
+            _currentPositions = newPositions;
         }
     }
 }
