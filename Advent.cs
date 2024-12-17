@@ -43,8 +43,8 @@
 //Day14.SolvePart1();
 //Day14.SolvePart2();
 
-//Day15.SolvePart1();
-Day15.SolvePart2();
+Day15.SolvePart1();
+//Day15.SolvePart2();
 //Day15.Day15Play();
 //Day15.Day15Play2();
 

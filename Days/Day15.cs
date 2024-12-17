@@ -67,8 +67,9 @@ namespace advent2024.Days
             Console.SetCursorPosition(0, map.GetLength(0) + 1);
             Console.WriteLine("Press any key to start...");
             Console.ReadKey(true);
+            Console.SetCursorPosition(0, map.GetLength(0) + 2);
+            Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}[+/- 10]");
             Console.SetCursorPosition(0, map.GetLength(0) + 1);
-            //Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}ms[+/- 10]");
             Console.WriteLine($"GPS Total: {GetMapValue(map).ToString().PadRight(6)} [0/{directions.Count()}]");
 
             int dirCount = 1;
@@ -86,8 +87,8 @@ namespace advent2024.Days
                             _tickRate = Math.Max(_tickRate - 10, 0);
                             break;
                     }
-                    Console.SetCursorPosition(0, map.GetLength(0) + 1);
-                    //Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}ms[+/- 10]");
+                    Console.SetCursorPosition(0, map.GetLength(0) + 2);
+                    Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}[+/- 10]");
                 }
                 Thread.Sleep(_tickRate);
                 TryRobotMove(direction, ref startX, ref startY, map);
@@ -97,9 +98,8 @@ namespace advent2024.Days
                 Console.WriteLine($"GPS Total: {GetMapValue(map).ToString().PadRight(6)} [{dirCount++}/{directions.Count()}]");
 
             }
-            Console.SetCursorPosition(0, map.GetLength(0) + 3);
             int result = GetMapValue(map);
-            Console.SetCursorPosition(0, map.GetLength(0) + 5);
+            Console.SetCursorPosition(0, map.GetLength(0) + 4);
             Console.WriteLine($"15*1 -- {result}");
 
         }
