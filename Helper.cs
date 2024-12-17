@@ -248,7 +248,7 @@ namespace advent2024
                         {
                             if (map[i, j] != _previousMap[i, j])
                             {
-                                Console.SetCursorPosition(j*2, i); //j*2 for emoji, otherwise switch to j
+                                Console.SetCursorPosition(j * 2, i); //j*2 for emoji, otherwise switch to j
                                 PrintDay15Char(map[i, j]);
                                 _previousMap[i, j] = map[i, j];
                             }
@@ -398,6 +398,186 @@ namespace advent2024
             FloodFill(map, row + 1, col, target, region, visited); // Down
             FloodFill(map, row, col - 1, target, region, visited); // Left
             FloodFill(map, row, col + 1, target, region, visited); // Right
+        }
+
+
+        public class State
+        {
+            public Point Position { get; }
+            public Direction Direction { get; }
+            public int Cost { get; }
+            public List<Point> Path { get; }
+
+            public State(Point position, Direction direction, int cost, List<Point> path = null)
+            {
+                Position = position;
+                Direction = direction;
+                Cost = cost;
+                Path = path;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is State other)
+                {
+                    return Position.Equals(other.Position) && Direction == other.Direction;
+                }
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(Position, Direction);
+            }
+        }
+
+        public static int FindShortestPath(char[,] map, Point start, Point end)
+        {
+            PriorityQueue<State, int> queue = new PriorityQueue<State, int>();
+            HashSet<(Point, Direction)> visited = new HashSet<(Point, Direction)>();
+
+            State initialState = new State(start, Direction.Right, 0);
+            queue.Enqueue(initialState, 0);
+
+            while (queue.Count > 0)
+            {
+                State currentState = queue.Dequeue();
+                (Point, Direction) stateKey = (currentState.Position, currentState.Direction);
+                if (visited.Contains(stateKey))
+                    continue;
+                visited.Add(stateKey);
+                if (currentState.Position.Equals(end))
+                    return currentState.Cost;
+                List<Direction> possibleMoves = GetPossibleMoves(currentState.Direction);
+                foreach (Direction nextDir in possibleMoves)
+                {
+                    Point offset = GetNextPoint(nextDir);
+                    Point nextPos = new Point(
+                        currentState.Position.X + offset.X,
+                        currentState.Position.Y + offset.Y
+                    );
+                    if (!IsValidMove(map, nextPos))
+                        continue;
+                    int moveCost = 1;
+                    if (nextDir != currentState.Direction)
+                        moveCost += 1000;
+                    int nextCost = currentState.Cost + moveCost;
+                    State nextState = new State(nextPos, nextDir, nextCost);
+                    if (!visited.Contains((nextPos, nextDir)))
+                        queue.Enqueue(nextState, nextState.Cost);
+                }
+            }
+            return -1;
+        }
+
+        private static List<Direction> GetPossibleMoves(Direction currentDir)
+        {
+            List<Direction> moves = new List<Direction>();
+
+            switch (currentDir)
+            {
+                case Direction.Left or Direction.Right:
+                    moves.Add(Direction.Up);
+                    moves.Add(Direction.Down);
+                    break;
+                case Direction.Up or Direction.Down:
+                    moves.Add(Direction.Left);
+                    moves.Add(Direction.Right);
+                    break;
+            }
+            moves.Add(currentDir);
+            return moves;
+        }
+
+        public static List<List<Point>> FindAllShortestPaths(char[,] map, Point start, Point end)
+        {
+            PriorityQueue<State, int> queue = new PriorityQueue<State, int>();
+            Dictionary<(Point, Direction), int> visited = new Dictionary<(Point, Direction), int>();
+            List<List<Point>> shortestPaths = new List<List<Point>>();
+            int minCostFound = int.MaxValue;
+            List<Point> initialPath = new List<Point>() { start };
+            State initialState = new State(start, Direction.Right, 0, initialPath);
+            queue.Enqueue(initialState, 0);
+            while (queue.Count > 0)
+            {
+                State currentState = queue.Dequeue();
+                (Point, Direction) stateKey = (currentState.Position, currentState.Direction);
+                if (visited.TryGetValue(stateKey, out int prevCost) && prevCost < currentState.Cost)
+                    continue;
+                visited[stateKey] = currentState.Cost;
+                if (currentState.Position.Equals(end))
+                {
+                    if (currentState.Cost < minCostFound)
+                    {
+                        shortestPaths.Clear();
+                        shortestPaths.Add(new List<Point>(currentState.Path));
+                        minCostFound = currentState.Cost;
+                    }
+                    else if (currentState.Cost == minCostFound)
+                        shortestPaths.Add(new List<Point>(currentState.Path));
+                    continue;
+                }
+                if (currentState.Cost >= minCostFound)
+                    continue;
+                List<Direction> possibleMoves = GetPossibleMoves(currentState.Direction);
+                foreach (Direction nextDir in possibleMoves)
+                {
+                    Point offset = GetNextPoint(nextDir);
+                    Point nextPos = new Point(
+                        currentState.Position.X + offset.X,
+                        currentState.Position.Y + offset.Y
+                    );
+
+                    if (!IsValidMove(map, nextPos))
+                        continue;
+                    int moveCost = 1;
+                    if (nextDir != currentState.Direction)
+                        moveCost += 1000;
+                    int nextCost = currentState.Cost + moveCost;
+                    List<Point> nextPath = new List<Point>(currentState.Path) { nextPos };
+                    State nextState = new State(nextPos, nextDir, nextCost, nextPath);
+                    (Point, Direction) nextStateKey = (nextPos, nextDir);
+                    if (!visited.TryGetValue(nextStateKey, out prevCost) || nextCost <= prevCost)
+                        queue.Enqueue(nextState, nextState.Cost);
+                }
+            }
+
+            return shortestPaths;
+        }
+
+        private static Point GetNextPoint(Direction d)
+        {
+            Point nextP = new Point(0, 0);
+            switch (d)
+            {
+                case Direction.Up:
+                    nextP.X = -1;
+                    nextP.Y = 0;
+                    break;
+                case Direction.Down:
+                    nextP.X = 1;
+                    nextP.Y = 0;
+                    break;
+                case Direction.Left:
+                    nextP.X = 0;
+                    nextP.Y = -1;
+                    break;
+                case Direction.Right:
+                    nextP.X = 0;
+                    nextP.Y = 1;
+                    break;
+            }
+            return nextP;
+        }
+
+        private static bool IsValidMove(char[,] map, Point pos)
+        {
+            int height = map.GetLength(0);
+            int width = map.GetLength(1);
+
+            return pos.X >= 0 && pos.X < height &&
+                   pos.Y >= 0 && pos.Y < width &&
+                   map[pos.X, pos.Y] != '#';
         }
     }
 }
