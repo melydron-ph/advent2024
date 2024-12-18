@@ -1,4 +1,5 @@
-﻿using System;
+﻿using advent2024.Days;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -431,7 +432,7 @@ namespace advent2024
             }
         }
 
-        public static int FindShortestPath(char[,] map, Point start, Point end)
+        public static int FindShortestPath(char[,] map, Point start, Point end, bool day16 = false)
         {
             PriorityQueue<State, int> queue = new PriorityQueue<State, int>();
             HashSet<(Point, Direction)> visited = new HashSet<(Point, Direction)>();
@@ -448,7 +449,7 @@ namespace advent2024
                 visited.Add(stateKey);
                 if (currentState.Position.Equals(end))
                     return currentState.Cost;
-                List<Direction> possibleMoves = GetPossibleMoves(currentState.Direction);
+                List<Direction> possibleMoves = GetPossibleMoves(currentState.Direction, day16);
                 foreach (Direction nextDir in possibleMoves)
                 {
                     Point offset = GetNextPoint(nextDir);
@@ -459,8 +460,9 @@ namespace advent2024
                     if (!IsValidMove(map, nextPos))
                         continue;
                     int moveCost = 1;
-                    if (nextDir != currentState.Direction)
-                        moveCost += 1000;
+                    if (day16) // Day 16
+                        if (nextDir != currentState.Direction)
+                            moveCost += 1000;
                     int nextCost = currentState.Cost + moveCost;
                     State nextState = new State(nextPos, nextDir, nextCost);
                     if (!visited.Contains((nextPos, nextDir)))
@@ -470,7 +472,7 @@ namespace advent2024
             return -1;
         }
 
-        private static List<Direction> GetPossibleMoves(Direction currentDir)
+        private static List<Direction> GetPossibleMoves(Direction currentDir, bool day16 = false)
         {
             List<Direction> moves = new List<Direction>();
 
@@ -489,7 +491,7 @@ namespace advent2024
             return moves;
         }
 
-        public static List<List<Point>> FindAllShortestPaths(char[,] map, Point start, Point end)
+        public static List<List<Point>> FindAllShortestPaths(char[,] map, Point start, Point end, bool day16 = false)
         {
             PriorityQueue<State, int> queue = new PriorityQueue<State, int>();
             Dictionary<(Point, Direction), int> visited = new Dictionary<(Point, Direction), int>();
@@ -519,7 +521,7 @@ namespace advent2024
                 }
                 if (currentState.Cost >= minCostFound)
                     continue;
-                List<Direction> possibleMoves = GetPossibleMoves(currentState.Direction);
+                List<Direction> possibleMoves = GetPossibleMoves(currentState.Direction, day16);
                 foreach (Direction nextDir in possibleMoves)
                 {
                     Point offset = GetNextPoint(nextDir);
@@ -531,8 +533,9 @@ namespace advent2024
                     if (!IsValidMove(map, nextPos))
                         continue;
                     int moveCost = 1;
-                    if (nextDir != currentState.Direction)
-                        moveCost += 1000;
+                    if (day16)
+                        if (nextDir != currentState.Direction)
+                            moveCost += 1000;
                     int nextCost = currentState.Cost + moveCost;
                     List<Point> nextPath = new List<Point>(currentState.Path) { nextPos };
                     State nextState = new State(nextPos, nextDir, nextCost, nextPath);

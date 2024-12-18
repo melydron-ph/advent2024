@@ -42,7 +42,7 @@ namespace advent2024.Days
             }
             Point startP = new Point(startX, startY);
             Point endP = new Point(destX, destY);
-            int result = FindShortestPath(map, startP, endP);
+            int result = FindShortestPath(map, startP, endP, true);
             Console.WriteLine($"16*1 -- {result}");
 
         }
@@ -77,7 +77,7 @@ namespace advent2024.Days
             }
             Point startP = new Point(startX, startY);
             Point endP = new Point(destX, destY);
-            List<List<Point>> allPaths = FindAllShortestPaths(map, startP, endP);
+            List<List<Point>> allPaths = FindAllShortestPaths(map, startP, endP, true);
             HashSet<Point> result = new HashSet<Point>();
             foreach (var path in allPaths)
             {
