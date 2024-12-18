@@ -48,7 +48,6 @@ namespace advent2024.Days
                 mapRows = 7;
                 mapCols = 11;
             }
-            int seconds = 100000;
             bool print = true;
             if (print)
             {
@@ -64,25 +63,53 @@ namespace advent2024.Days
                 }
                 Console.ReadKey();
             }
+
+            int max = 0;
+            int result = 0;
+            int seconds = 10000;
             for (int i = 1; i < seconds; i++)
             {
                 foreach (Robot robot in robots)
                 {
                     robot.Move(mapRows, mapCols);
                 }
-                RobotDistribution robDistr = new RobotDistribution(robots, mapRows, mapCols);
-                int check = 15;
-                if (robDistr.PerRow.Any(count => count > check) && robDistr.PerCol.Any(count => count > check))
-                {
+                List<int> robotsInQuadrants = RobotsInQuadrants(robots, mapRows, mapCols);
+                int newMax = robotsInQuadrants.Max();
+                if (newMax > max) {
                     if (print)
                     {
+                        Thread.Sleep(20);
                         PrintRobots(robots, mapRows, mapCols);
                         Console.SetCursorPosition(0, mapRows + 1);
                     }
-                    Console.WriteLine($"14*2 - {i}");
-                    break;
+                    max = newMax;
+                    result = i;
                 }
             }
+            Console.WriteLine($"14*2 - {result}");
+
+            // initially solved with the below, very gimmicky and luck dependant.
+            // the above solution is probably better for all inputs
+            //for (int i = 1; i < seconds; i++) 
+            //{
+            //    foreach (Robot robot in robots)
+            //    {
+            //        robot.Move(mapRows, mapCols);
+            //    }
+            //    RobotDistribution robDistr = new RobotDistribution(robots, mapRows, mapCols);
+            //    int check = 15;
+            //    if (robDistr.PerRow.Any(count => count > check) && robDistr.PerCol.Any(count => count > check))
+            //    {
+            //        if (print)
+            //        {
+            //            PrintRobots(robots, mapRows, mapCols);
+            //            Console.SetCursorPosition(0, mapRows + 1);
+            //        }
+            //        Console.WriteLine($"14*2 - {i}");
+            //        break;
+            //    }
+            //}
+
         }
 
         private static List<Robot> GetRobotsFromFile(string inputFile)
