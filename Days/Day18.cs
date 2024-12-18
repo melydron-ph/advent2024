@@ -49,15 +49,23 @@ namespace advent2024.Days
             //PrintMap(map);
             Point start = new Point(0, 0);
             Point end = new Point(mapRows - 1, mapCols - 1);
-            while (corrupt <= bytes.Count())
+
+            int left = 0;
+            int right = bytes.Count();
+            int result = -1;
+            while (left <= right)
             {
-                map = GetMapFromBytes(bytes, corrupt, mapRows, mapCols);
-                if (FindShortestPath(map, start, end) < 0){
-                    break;
+                int mid = left + (right - left) / 2;
+                map = GetMapFromBytes(bytes, mid, mapRows, mapCols);
+                if (FindShortestPath(map, start, end) < 0)
+                {
+                    result = mid;
+                    right = mid - 1;
                 }
-                corrupt++;
+                else
+                    left = mid + 1;
             }
-            Point p = bytes[corrupt-1];
+            Point p = bytes[result-1];
             Console.WriteLine($"18*2 -- {p.X},{p.Y}");
         }
 
