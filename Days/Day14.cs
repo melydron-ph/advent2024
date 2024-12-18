@@ -11,7 +11,8 @@ namespace advent2024.Days
     public static class Day14
     {
         private static readonly string InputFile = @"C:\aoc\2024\day14\input.txt";
-        private static readonly string InputFile2 = @"C:\aoc\2024\day14\input3.txt";
+        //private static readonly string InputFile2 = @"C:\aoc\2024\day14\input2.txt";
+        //private static readonly string InputFile3 = @"C:\aoc\2024\day14\input3.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day14\output.txt";
         public static void SolvePart1()
         {
@@ -86,6 +87,50 @@ namespace advent2024.Days
                 }
             }
 
+            //robots = GetRobotsFromFile(InputFile2);
+            //for (int i = 1; i < seconds; i++)
+            //{
+            //    foreach (Robot robot in robots)
+            //    {
+            //        robot.Move(mapRows, mapCols);
+            //    }
+            //    RobotDistribution robDistr = new RobotDistribution(robots, mapRows, mapCols);
+            //    int check = 20;
+            //    if (robDistr.PerRow.Any(count => count > check) && robDistr.PerCol.Any(count => count > check))
+            //    {
+            //        if (print)
+            //        {
+            //            int printNum = 2;
+            //            PrintRobots(robots, mapRows, mapCols, printNum);
+            //            Console.SetCursorPosition(0, mapRows + 1);
+            //        }
+            //        //Console.WriteLine($"14*2 - {i}");
+            //        break;
+            //    }
+            //}
+
+            //robots = GetRobotsFromFile(InputFile3);
+            //for (int i = 1; i < seconds; i++)
+            //{
+            //    foreach (Robot robot in robots)
+            //    {
+            //        robot.Move(mapRows, mapCols);
+            //    }
+            //    RobotDistribution robDistr = new RobotDistribution(robots, mapRows, mapCols);
+            //    int check = 20;
+            //    if (robDistr.PerRow.Any(count => count > check) && robDistr.PerCol.Any(count => count > check))
+            //    {
+            //        if (print)
+            //        {
+            //            int printNum = 3;
+            //            PrintRobots(robots, mapRows, mapCols, printNum);
+            //            Console.SetCursorPosition(0, mapRows + 1);
+            //        }
+            //        //Console.WriteLine($"14*2 - {i}");
+            //        break;
+            //    }
+            //}
+
             //int max = 0;
             //int result = 0;
             //for (int i = 1; i < seconds; i++)
@@ -114,7 +159,7 @@ namespace advent2024.Days
         private static List<Robot> GetRobotsFromFile(string inputFile)
         {
             List<Robot> robots = new List<Robot>();
-            string[] lines = File.ReadAllText(InputFile).Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = File.ReadAllText(inputFile).Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines)
             {
                 var nums = Regex.Matches(line, @"-?\d+").Select(m => int.Parse(m.Value)).ToList();
@@ -215,7 +260,7 @@ namespace advent2024.Days
 
 
         private static Dictionary<Point, int> _currentPositions = new Dictionary<Point, int>();
-        public static void PrintRobots(List<Robot> robots, int mapRows, int mapCols)
+        public static void PrintRobots(List<Robot> robots, int mapRows, int mapCols, int printNum = 1)
         {
             var newPositions = new Dictionary<Point, int>();
 
@@ -232,7 +277,8 @@ namespace advent2024.Days
                 {
                     Console.SetCursorPosition(oldPos.Key.X, oldPos.Key.Y);
                     Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.Write(" ");
+                    if (printNum == 1)
+                        Console.Write(" ");
                 }
             }
 
@@ -242,6 +288,10 @@ namespace advent2024.Days
                 {
                     Console.SetCursorPosition(pos.Key.X, pos.Key.Y);
                     Console.ForegroundColor = ConsoleColor.Green;
+                    if (printNum == 2)
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                    else if(printNum == 3)
+                        Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write('*');
                 }
             }
