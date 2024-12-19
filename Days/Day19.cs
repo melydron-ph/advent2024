@@ -60,24 +60,14 @@ namespace advent2024.Days
             {
                 if (pattern.Length > towel.Length)
                     continue;
-                bool isMatch = true;
-
-                for (int i = 0; i < pattern.Length; i++)
+                if (towel.StartsWith(pattern))
                 {
-                    if (towel[i] != pattern[i])
-                    {
-                        isMatch = false;
-                        break;
-                    }
+                    if (pattern.Length == towel.Length)
+                        return true;
+                    string remTowel = towel.Substring(pattern.Length);
+                    if (CanMakeTowel(remTowel, patterns))
+                        return true;
                 }
-                if (!isMatch) continue;
-                //Console.WriteLine($"\t\tFound {pattern}");
-                if (pattern.Length == towel.Length)
-                    return true;
-
-                string remTowel = towel.Substring(pattern.Length);
-                if (CanMakeTowel(remTowel, patterns))
-                    return true;
             }
             return false;
         }
@@ -97,27 +87,15 @@ namespace advent2024.Days
                 if (pattern.Length > towel.Length)
                     continue;
 
-                bool isMatch = true;
-                for (int i = 0; i < pattern.Length; i++)
+                if (towel.StartsWith(pattern))
                 {
-                    if (towel[i] != pattern[i])
+                    if (pattern.Length == towel.Length)
+                        total++;
+                    else
                     {
-                        isMatch = false;
-                        break;
+                        string remTowel = towel.Substring(pattern.Length);
+                        total += WaysToMakeTowel(remTowel, patterns);
                     }
-                }
-                if (!isMatch) continue;
-                //Console.WriteLine($"\t\tFound {pattern}");
-
-                if (pattern.Length == towel.Length)
-                {
-                    total++;
-                }
-                else
-                {
-                    string remTowel = towel.Substring(pattern.Length);
-
-                    total += WaysToMakeTowel(remTowel, patterns);
                 }
             }
             towelsChecked[towel] = total;
