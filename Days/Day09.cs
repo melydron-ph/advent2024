@@ -13,23 +13,27 @@ namespace advent2024.Days
 
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string line = File.ReadAllText(InputFile);
             List<int> blocks = GetBlocksFromLine(line);
             blocks = CompactBlocks(blocks);
             long result = GetChecksum(blocks);
-            Console.WriteLine($"09*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"09*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
 
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string line = File.ReadAllText(InputFile);
             List<int> blocks = GetBlocksFromLine(line);
             //File.AppendAllLines(OutputFile, blocks.Select(x => x == -1 ? "." : x.ToString()));
             blocks = CompactBlocks(blocks, true);
             long result = GetChecksum(blocks);
-            Console.WriteLine($"09*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"09*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         private static List<int> GetBlocksFromLine(string line)

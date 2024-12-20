@@ -16,6 +16,7 @@ namespace advent2024.Days
         private static readonly string OutputFile = @"C:\aoc\2024\day14\output.txt";
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             List<Robot> robots = GetRobotsFromFile(InputFile);
 
@@ -36,10 +37,12 @@ namespace advent2024.Days
             }
             List<int> robotsInQuadrants = RobotsInQuadrants(robots, mapRows, mapCols);
             int result = robotsInQuadrants[1] * robotsInQuadrants[2] * robotsInQuadrants[3] * robotsInQuadrants[4];
-            Console.WriteLine($"14*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"14*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             List<Robot> robots = GetRobotsFromFile(InputFile);
 
@@ -50,7 +53,7 @@ namespace advent2024.Days
                 mapRows = 7;
                 mapCols = 11;
             }
-            bool print = true;
+            bool print = false;
             if (print)
             {
                 Console.Clear();
@@ -82,7 +85,8 @@ namespace advent2024.Days
                         PrintRobots(robots, mapRows, mapCols);
                         Console.SetCursorPosition(0, mapRows + 1);
                     }
-                    Console.WriteLine($"14*2 - {i}");
+                    stopwatch.Stop();
+                    Console.WriteLine($"14*2 -- {i} ({stopwatch.ElapsedMilliseconds} ms)");
                     break;
                 }
             }
@@ -290,7 +294,7 @@ namespace advent2024.Days
                     Console.ForegroundColor = ConsoleColor.Green;
                     if (printNum == 2)
                         Console.ForegroundColor = ConsoleColor.Cyan;
-                    else if(printNum == 3)
+                    else if (printNum == 3)
                         Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write('*');
                 }

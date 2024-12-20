@@ -16,6 +16,7 @@ namespace advent2024.Days
 
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
 
             var lines = File.ReadAllLines(InputFile);
@@ -29,11 +30,13 @@ namespace advent2024.Days
                     result++;
                 }
             }
-            Console.WriteLine($"02*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"02*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
 
             var lines = File.ReadAllLines(InputFile);
@@ -47,7 +50,8 @@ namespace advent2024.Days
                     result++;
                 }
             }
-            Console.WriteLine($"02*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"02*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         private static bool IsSafeReport(int[] report, bool dampener = false)

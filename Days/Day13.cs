@@ -13,6 +13,7 @@ namespace advent2024.Days
         private static readonly string OutputFile = @"C:\aoc\2024\day13\output.txt";
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             List<ClawMachine> clawMachines = GetClawMachinesFromFile(InputFile);
             long result = 0;
@@ -23,11 +24,13 @@ namespace advent2024.Days
                     result += s.Value.buttonACount * 3 + s.Value.buttonBCount;
                 }
             }
-            Console.WriteLine($"13*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"13*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
 
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             List<ClawMachine> clawMachines = GetClawMachinesFromFile(InputFile);
             long result = 0;
@@ -40,7 +43,8 @@ namespace advent2024.Days
                     result += s.Value.buttonACount * 3 + s.Value.buttonBCount;
                 }
             }
-            Console.WriteLine($"13*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"13*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
 

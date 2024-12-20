@@ -11,6 +11,7 @@ namespace advent2024.Days
 
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
 
             string[] lines = File.ReadAllLines(InputFile);
@@ -30,11 +31,13 @@ namespace advent2024.Days
                     }
                 }
             }
-            Console.WriteLine($"04*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"04*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
 
             string[] lines = File.ReadAllLines(InputFile);
@@ -55,7 +58,8 @@ namespace advent2024.Days
                 }
             }
 
-            Console.WriteLine($"04*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"04*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
     }
 

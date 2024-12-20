@@ -11,6 +11,7 @@ namespace advent2024.Days
 
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
 
             string file = File.ReadAllText(InputFile);
@@ -53,10 +54,12 @@ namespace advent2024.Days
                 if (rightOrder)
                     result += update[update.Count / 2];
             }
-            Console.WriteLine($"05*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"05*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
 
             string file = File.ReadAllText(InputFile);
@@ -102,7 +105,8 @@ namespace advent2024.Days
                 }
             }
 
-            Console.WriteLine($"05*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"05*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         private static int FixedUpdateResult(List<int> update, List<(int, int)> rules)

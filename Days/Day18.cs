@@ -14,6 +14,7 @@ namespace advent2024.Days
         private static readonly string OutputFile = @"C:\aoc\2024\day18\output.txt";
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             List<Point> bytes = GetBytesFromFile(InputFile);
             int mapRows = 71;
@@ -30,10 +31,12 @@ namespace advent2024.Days
             Point start = new Point(0, 0);
             Point end = new Point(mapRows - 1, mapCols - 1);
             int result = FindShortestPath(map, start, end, false);
-            Console.WriteLine($"18*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"18*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             List<Point> bytes = GetBytesFromFile(InputFile);
             int mapRows = 71;
@@ -66,7 +69,8 @@ namespace advent2024.Days
                     left = mid + 1;
             }
             Point p = bytes[result-1];
-            Console.WriteLine($"18*2 -- {p.X},{p.Y}");
+            stopwatch.Stop();
+            Console.WriteLine($"18*2 -- {p.X},{p.Y} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         private static List<Point> GetBytesFromFile(string inputFile)

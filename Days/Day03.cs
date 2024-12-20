@@ -10,6 +10,7 @@ namespace advent2024.Days
         private static readonly string OutputFile = @"C:\aoc\2024\day3\output.txt";
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
 
             var file = File.ReadAllText(InputFile);
@@ -24,11 +25,13 @@ namespace advent2024.Days
                 result += (int.Parse(match.Groups[1].Value) * int.Parse(match.Groups[2].Value));
             }
 
-            Console.WriteLine($"03*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"03*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
 
             var file = File.ReadAllText(InputFile);
@@ -79,7 +82,8 @@ namespace advent2024.Days
                 }
             }
 
-            Console.WriteLine($"03*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"03*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
     }
 

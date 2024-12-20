@@ -16,6 +16,7 @@ namespace advent2024.Days
         private static int _tickRate = 50;
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             File.WriteAllText(OutputFile, string.Empty);
             string file = File.ReadAllText(InputFile);
@@ -63,50 +64,51 @@ namespace advent2024.Days
                     }
                 }
             }
-            PrintMap(map, true);
-            Console.SetCursorPosition(0, map.GetLength(0) + 1);
-            Console.WriteLine("Press any key to start...");
-            Console.ReadKey(true);
-            Console.SetCursorPosition(0, map.GetLength(0) + 2);
-            Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}[+/- 10]");
-            Console.SetCursorPosition(0, map.GetLength(0) + 1);
-            Console.WriteLine($"GPS Total: {GetMapValue(map).ToString().PadRight(6)} [0/{directions.Count()}]");
+            //PrintMap(map, true);
+            //Console.SetCursorPosition(0, map.GetLength(0) + 1);
+            //Console.WriteLine("Press any key to start...");
+            //Console.ReadKey(true);
+            //Console.SetCursorPosition(0, map.GetLength(0) + 2);
+            //Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}[+/- 10]");
+            //Console.SetCursorPosition(0, map.GetLength(0) + 1);
+            //Console.WriteLine($"GPS Total: {GetMapValue(map).ToString().PadRight(6)} [0/{directions.Count()}]");
 
-            int dirCount = 1;
             foreach (Direction direction in directions)
             {
-                while (Console.KeyAvailable)
-                {
-                    var key = Console.ReadKey(true);
-                    switch (key.Key)
-                    {
-                        case ConsoleKey.Add:
-                            _tickRate = Math.Min(_tickRate + 10, 100);
-                            break;
-                        case ConsoleKey.Subtract:
-                            _tickRate = Math.Max(_tickRate - 10, 0);
-                            break;
-                    }
-                    Console.SetCursorPosition(0, map.GetLength(0) + 2);
-                    Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}[+/- 10]");
-                }
-                Thread.Sleep(_tickRate);
+                //while (Console.KeyAvailable)
+                //{
+                //    var key = Console.ReadKey(true);
+                //    switch (key.Key)
+                //    {
+                //        case ConsoleKey.Add:
+                //            _tickRate = Math.Min(_tickRate + 10, 100);
+                //            break;
+                //        case ConsoleKey.Subtract:
+                //            _tickRate = Math.Max(_tickRate - 10, 0);
+                //            break;
+                //    }
+                //    //Console.SetCursorPosition(0, map.GetLength(0) + 2);
+                //    //Console.WriteLine($"Tick Rate: {_tickRate.ToString().PadRight(3)}[+/- 10]");
+                //}
+                //Thread.Sleep(_tickRate);
                 TryRobotMove(direction, ref startX, ref startY, map);
                 //Console.Clear();
-                PrintMap(map, true);
-                Console.SetCursorPosition(0, map.GetLength(0) + 1);
-                Console.WriteLine($"GPS Total: {GetMapValue(map).ToString().PadRight(6)} [{dirCount++}/{directions.Count()}]");
+                //PrintMap(map, true);
+                //Console.SetCursorPosition(0, map.GetLength(0) + 1);
+                //Console.WriteLine($"GPS Total: {GetMapValue(map).ToString().PadRight(6)} [{dirCount++}/{directions.Count()}]");
 
             }
             int result = GetMapValue(map);
-            Console.SetCursorPosition(0, map.GetLength(0) + 4);
-            Console.WriteLine($"15*1 -- {result}");
+            //Console.SetCursorPosition(0, map.GetLength(0) + 4);
+            stopwatch.Stop();
+            Console.WriteLine($"15*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
 
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-            bool showStuff = true;
+            bool showStuff = false;
             File.WriteAllText(OutputFile, string.Empty);
             string file = File.ReadAllText(InputFile);
             file = file.Replace("#", "##");
@@ -201,7 +203,8 @@ namespace advent2024.Days
             int result = GetMapValue(map);
             if (showStuff)
                 Console.SetCursorPosition(0, map.GetLength(0) + 3);
-            Console.WriteLine($"15*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"15*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         public static void Day15Play()
@@ -265,8 +268,6 @@ namespace advent2024.Days
             }
 
             int result = GetMapValue(map);
-            Console.WriteLine($"15*1 -- {result}");
-
         }
 
         public static void Day15Play2()
@@ -335,7 +336,6 @@ namespace advent2024.Days
             }
 
             int result = GetMapValue(map);
-            Console.WriteLine($"15*1 -- {result}");
 
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Runtime.ExceptionServices;
+﻿using System;
+using System.Runtime.ExceptionServices;
 using System.Text.RegularExpressions;
 using static advent2024.Helper;
 
@@ -8,10 +9,10 @@ namespace advent2024.Days
     {
         private static readonly string InputFile = @"C:\aoc\2024\day6\input.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day6\output.txt";
-        private static List<((int, int), Direction)> BlocksVisited;
 
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             int mapX = lines[0].Length;
@@ -20,7 +21,7 @@ namespace advent2024.Days
             int startX = 0;
             int startY = 0;
             Direction d = new Direction();
-            List<(int, int)> visitedPos = new List<(int, int)>();
+            HashSet<(int, int)> visitedPos = new HashSet<(int, int)>();
             for (int i = 0; i < mapY; i++)
             {
                 string line = lines[i];
@@ -53,10 +54,12 @@ namespace advent2024.Days
             visitedPos.Add((startX, startY));
             MoveUntilExit(startX, startY, map, ref d, ref visitedPos);
             int result = visitedPos.Count();
-            Console.WriteLine($"06*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"06*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             int mapX = lines[0].Length;
@@ -65,7 +68,7 @@ namespace advent2024.Days
             int startX = 0;
             int startY = 0;
             Direction d = new Direction();
-            List<(int, int)> visitedPos = new List<(int, int)>();
+            HashSet<(int, int)> visitedPos = new HashSet<(int, int)>();
             for (int i = 0; i < mapY; i++)
             {
                 string line = lines[i];
@@ -95,39 +98,37 @@ namespace advent2024.Days
                     }
                 }
             }
+            Direction originD = d;
+            HashSet<(int, int)> saveExitRoute= new HashSet<(int, int)>();
+            saveExitRoute.Add((startX, startY));
+            MoveUntilExit(startX, startY, map, ref d, ref saveExitRoute);
+            BlocksVisited.Clear();
+
             visitedPos.Add((startX, startY));
-
-            BlocksVisited = new List<((int, int), Direction)>();
             int result = 0;
-            for (int i = 0;i < mapX; i++)
+            int originX = startX;
+            int originY = startY;
+            foreach ((int i, int j) in saveExitRoute)
             {
-                Console.WriteLine($"{i} / {mapX}");
-
-                for (int j = 0;j < mapY; j++)
+                if ((i, j) != (originX, originY))
                 {
-                    int originX = startX;
-                    int originY = startY;
-                    Direction originD = d;
-                    if ( (i,j) != (originX, originY) )
-                    {
-                        if (map[i, j] == '.'){
-                            map[i, j] = '#';
-                            result += MoveUntilExit(originX, originY, map, ref d, ref visitedPos, true);
-                            BlocksVisited.Clear();
-                            visitedPos.Clear();
-                            visitedPos.Add((startX, startY));
-                            d = originD;
-                            map[i, j] = '.';
-                        }
-                    }
+                    map[i, j] = '#';
+                    result += MoveUntilExit(originX, originY, map, ref d, ref visitedPos, true);
+                    BlocksVisited.Clear();
+                    visitedPos.Clear();
+                    visitedPos.Add((startX, startY));
+                    d = originD;
+                    map[i, j] = '.';
                 }
             }
-
-            Console.WriteLine($"06*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"06*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
+        private static readonly HashSet<((int x, int y) pos, Direction dir)> BlocksVisited = new();
 
-        internal static int MoveUntilExit(int startX, int startY, char[,] map, ref Direction d, ref List<(int, int)> visitedPos, bool loopSearch = false)
+
+        internal static int MoveUntilExit(int startX, int startY, char[,] map, ref Direction d, ref HashSet<(int, int)> visitedPos, bool loopSearch = false)
         {
             Direction prevD = d;
             int move = MoveLine(ref startX, ref startY, map, ref d, ref visitedPos, loopSearch);
@@ -142,7 +143,7 @@ namespace advent2024.Days
             return move > 0 ? move : 0;
         }
 
-        internal static int MoveLine(ref int startX, ref int startY, char[,] map, ref Direction d, ref List<(int, int)> visitedPos, bool loopSearch = false)
+        internal static int MoveLine(ref int startX, ref int startY, char[,] map, ref Direction d, ref HashSet<(int, int)> visitedPos, bool loopSearch = false)
         {
             int mapX = map.GetLength(0);
             int mapY = map.GetLength(1);
@@ -273,5 +274,8 @@ namespace advent2024.Days
             }
             return 0;
         }
+
+        private static bool IsValidPosition(int x, int y, int mapX, int mapY) =>
+    x >= 0 && x < mapX && y >= 0 && y < mapY;
     }
 }

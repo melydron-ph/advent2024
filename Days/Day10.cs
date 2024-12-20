@@ -14,6 +14,7 @@ namespace advent2024.Days
 
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             int rows = lines.Count();
@@ -47,11 +48,13 @@ namespace advent2024.Days
             {
                 result += trailHead.Value.Count();
             }
-            Console.WriteLine($"10*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"10*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
 
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             int rows = lines.Count();
@@ -67,8 +70,8 @@ namespace advent2024.Days
             List<List<(int, int)>> allPaths = FindAllPaths(map);
 
             int result = allPaths.Count(); ;
-
-            Console.WriteLine($"10*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"10*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         private static List<List<(int, int)>> FindAllPaths(int[,] map)

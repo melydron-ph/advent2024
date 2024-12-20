@@ -11,6 +11,7 @@ namespace advent2024.Days
 
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             long result = 0;
@@ -25,10 +26,11 @@ namespace advent2024.Days
                     result += resultValue;
                 }
             }
-            Console.WriteLine($"07*1 -- {result}");
+            Console.WriteLine($"07*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             long result = 0;
@@ -43,7 +45,8 @@ namespace advent2024.Days
                     result += resultValue;
                 }
             }
-            Console.WriteLine($"07*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"07*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
         internal static bool NumbersProduceValue(int[] numbers, long resultValue, bool part2 = false)
         {

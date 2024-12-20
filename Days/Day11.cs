@@ -14,11 +14,11 @@ namespace advent2024.Days
 
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string line = File.ReadAllText(InputFile);
             List<long> stones = line.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
             int blinks = 25;
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             int result = ProcessStones(stones, blinks);
             stopwatch.Stop();
             Console.WriteLine($"11*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
@@ -26,11 +26,11 @@ namespace advent2024.Days
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string line = File.ReadAllText(InputFile);
             List<long> stones = line.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
             int blinks = 75;
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             long result = ProcessStonesWithDictionary(stones, blinks);
             stopwatch.Stop();
             Console.WriteLine($"11*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");

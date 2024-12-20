@@ -8,10 +8,9 @@ namespace advent2024.Days
 
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var lines = File.ReadAllLines(InputFile);
-
             int result = 0;
-
             int[] l = new int[lines.Length];
             int[] r = new int[lines.Length];
             for (int i = 0; i < lines.Length; i++)
@@ -28,11 +27,13 @@ namespace advent2024.Days
             {
                 result +=  Math.Abs(l[i] - r[i]);
             }
-            Console.WriteLine($"01*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"01*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var lines = File.ReadAllLines(InputFile);
             int result = 0;
 
@@ -50,7 +51,8 @@ namespace advent2024.Days
             {
                 result += l[i] * r.Where(x => x == l[i]).Count();
             }
-            Console.WriteLine($"01*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"01*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
     }
 }

@@ -13,6 +13,7 @@ namespace advent2024.Days
         private static readonly string OutputFile = @"C:\aoc\2024\day12\output.txt";
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             char[,] map = LinesToCharMap(lines);
@@ -47,11 +48,13 @@ namespace advent2024.Days
                 result += (area.Count() * borderCount);
 
             }
-            Console.WriteLine($"12*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"12*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
 
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             char[,] map = LinesToCharMap(lines);
@@ -134,7 +137,8 @@ namespace advent2024.Days
                 result += area.Count() * cornerCount;
             }
 
-            Console.WriteLine($"12*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"12*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
     }

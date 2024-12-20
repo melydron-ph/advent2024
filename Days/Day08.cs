@@ -16,6 +16,7 @@ namespace advent2024.Days
 
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             rows = lines.Count();
@@ -60,10 +61,12 @@ namespace advent2024.Days
             //{
             //    Console.WriteLine(point);
             //}
-            Console.WriteLine($"08*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"08*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             rows = lines.Count();
@@ -121,7 +124,8 @@ namespace advent2024.Days
             //{
             //    Console.WriteLine(point);
             //}
-            Console.WriteLine($"08*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"08*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         private static void CheckAndAddLocations(Point p1, Point p2, List<Point> anticharLocations, bool part2 = false)

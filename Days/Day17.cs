@@ -13,14 +13,17 @@ namespace advent2024.Days
         private static readonly string OutputFile = @"C:\aoc\2024\day17\output.txt";
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             Threebit t = GetThreebitFromFile(InputFile);
             List<long> result = RunThreebit(t);
-            Console.WriteLine($"17*1 -- {String.Join(',', result)}");
+            stopwatch.Stop();
+            Console.WriteLine($"17*1 -- {String.Join(',', result)} ({stopwatch.ElapsedMilliseconds} ms)");
 
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             Threebit t = GetThreebitFromFile(InputFile);
             long init = 0;
@@ -50,7 +53,8 @@ namespace advent2024.Days
                     }
                 }
             }
-            Console.WriteLine($"17*2 -- {init}");
+            stopwatch.Stop();
+            Console.WriteLine($"17*2 -- {init} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         private class Threebit

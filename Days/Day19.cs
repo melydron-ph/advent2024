@@ -15,6 +15,7 @@ namespace advent2024.Days
         private static readonly string OutputFile = @"C:\aoc\2024\day19\output.txt";
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             var (patterns, towels) = GetPatternsAndTowels(InputFile);
             int result = 0;
@@ -28,20 +29,23 @@ namespace advent2024.Days
                 }
 
             }
-            Console.WriteLine($"19*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"19*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             var (patterns, towels) = GetPatternsAndTowels(InputFile);
             long result = 0;
             foreach (string towel in towels)
             {
                 result += WaysToMakeTowel(towel, patterns);
-                //Console.WriteLine($"**{towel} -- {result}");
+                //Console.WriteLine($"**{towel} -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
 
             }
-            Console.WriteLine($"19*2 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"19*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         private static (List<string> patterns, List<string> towels) GetPatternsAndTowels(string inputFile)

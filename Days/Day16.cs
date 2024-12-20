@@ -13,6 +13,7 @@ namespace advent2024.Days
         private static readonly string OutputFile = @"C:\aoc\2024\day16\output.txt";
         public static void SolvePart1()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             int mapX = lines[0].Length;
@@ -43,11 +44,13 @@ namespace advent2024.Days
             Point startP = new Point(startX, startY);
             Point endP = new Point(destX, destY);
             int result = FindShortestPath(map, startP, endP, true);
-            Console.WriteLine($"16*1 -- {result}");
+            stopwatch.Stop();
+            Console.WriteLine($"16*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
 
         }
         public static void SolvePart2()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
             int mapX = lines[0].Length;
@@ -86,7 +89,8 @@ namespace advent2024.Days
                     result.Add(point);
                 }
             }
-            Console.WriteLine($"16*2 -- {result.Count}");
+            stopwatch.Stop();
+            Console.WriteLine($"16*2 -- {result.Count} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
     }
