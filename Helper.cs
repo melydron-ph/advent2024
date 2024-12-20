@@ -642,5 +642,6 @@ namespace advent2024
                    pos.Y >= 0 && pos.Y < width &&
                    map[pos.X, pos.Y] != '#';
         }
+
     }
 }

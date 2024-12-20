@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using static advent2024.Days.Day13;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace advent2024.Days
 {
@@ -16,6 +17,8 @@ namespace advent2024.Days
         public static void SolvePart1()
         {
             File.WriteAllText(OutputFile, string.Empty);
+            Console.WriteLine($"20*1 -- start");
+
             string[] lines = File.ReadAllLines(InputFile);
             int mapX = lines[0].Length;
             int mapY = lines.Count();
@@ -44,11 +47,14 @@ namespace advent2024.Days
             //PrintMap(map);
             //Console.WriteLine($"Start: {start}, End: {end}");
             List<Point> raceTrack = FindShortestPath(map, start, end);
+            Console.WriteLine($"20*1 -- path found");
 
             foreach (Point p in raceTrack)
             {
                 TryCheat(raceTrack, p);
             }
+
+            Console.WriteLine($"20*1 -- cheats done");
 
 
             int result = 0;
@@ -67,7 +73,51 @@ namespace advent2024.Days
         public static void SolvePart2()
         {
             File.WriteAllText(OutputFile, string.Empty);
-            long result = 0;
+            string[] lines = File.ReadAllLines(InputFile);
+            int mapX = lines[0].Length;
+            int mapY = lines.Count();
+            char[,] map = new char[mapX, mapY];
+            Point start = new(0, 0);
+            Point end = new(0, 0);
+            for (int i = 0; i < mapY; i++)
+            {
+                string line = lines[i];
+                for (int j = 0; j < mapX; j++)
+                {
+                    map[i, j] = line[j];
+                    if (map[i, j] == 'S')
+                    {
+                        start.X = i;
+                        start.Y = j;
+                    }
+                    if (map[i, j] == 'E')
+                    {
+                        end.X = i;
+                        end.Y = j;
+                    }
+                }
+            }
+
+            //PrintMap(map);
+            //Console.WriteLine($"Start: {start}, End: {end}");
+            List<Point> raceTrack = FindShortestPath(map, start, end);
+
+            foreach (Point p in raceTrack)
+            {
+                TryCheat2(raceTrack, p);
+            }
+
+
+            int result = 0;
+
+            foreach (KeyValuePair<int, int> pair in cheats)
+            {
+                //if (pair.Key >= 100)
+                //{
+                result += pair.Value;
+                //Console.WriteLine($"There are {pair.Value} cheats that save {pair.Key} seconds.");
+                //}
+            }
             Console.WriteLine($"20*2 -- {result}");
         }
 
@@ -99,5 +149,30 @@ namespace advent2024.Days
                 }
             }
         }
+
+        private static void TryCheat2(List<Point> raceTrack, Point p)
+        {
+            int cheatStartIndex = raceTrack.IndexOf(p);
+            Dictionary<Point, int> forwardDistances = new();
+            for (int i = cheatStartIndex + 1; i < raceTrack.Count; i++)
+            {
+                int distance = ManhattanDistance(p, raceTrack[i]);
+                if (distance <= 20)
+                {
+                    int cheatEndIndex = raceTrack.IndexOf(raceTrack[i]);
+                    int secondsSaved = cheatEndIndex - cheatStartIndex - distance;
+                    if (secondsSaved >= 100)
+                        if (!cheats.ContainsKey(secondsSaved))
+                            cheats[secondsSaved] = 1;
+                        else
+                            cheats[secondsSaved]++;
+                }
+            }
+        }
+        public static int ManhattanDistance(Point p1, Point p2)
+        {
+            return Math.Abs(p1.X - p2.X) + Math.Abs(p1.Y - p2.Y);
+        }
     }
+
 }
