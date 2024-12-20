@@ -19,7 +19,7 @@ namespace advent2024.Days
             char[,] map = new char[mapX, mapY];
             int startX = 0;
             int startY = 0;
-            Direction d = Direction.Invalid;
+            Direction d = new Direction();
             List<(int, int)> visitedPos = new List<(int, int)>();
             for (int i = 0; i < mapY; i++)
             {
@@ -64,7 +64,7 @@ namespace advent2024.Days
             char[,] map = new char[mapX, mapY];
             int startX = 0;
             int startY = 0;
-            Direction d = Direction.Invalid;
+            Direction d = new Direction();
             List<(int, int)> visitedPos = new List<(int, int)>();
             for (int i = 0; i < mapY; i++)
             {

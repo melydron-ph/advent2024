@@ -57,8 +57,11 @@
 //Day18.SolvePart1();
 //Day18.SolvePart2();
 
-Day19.SolvePart1();
-Day19.SolvePart2();
+//Day19.SolvePart1();
+//Day19.SolvePart2();
+
+Day20.SolvePart1();
+Day20.SolvePart2();
 
 Console.WriteLine("\nPress any key to exit...");
 Console.ReadKey();

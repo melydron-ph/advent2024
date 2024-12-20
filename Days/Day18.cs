@@ -29,7 +29,7 @@ namespace advent2024.Days
             //PrintMap(map);
             Point start = new Point(0, 0);
             Point end = new Point(mapRows - 1, mapCols - 1);
-            int result = FindShortestPath(map, start, end);
+            int result = FindShortestPath(map, start, end, false);
             Console.WriteLine($"18*1 -- {result}");
         }
         public static void SolvePart2()
@@ -57,7 +57,7 @@ namespace advent2024.Days
             {
                 int mid = left + (right - left) / 2;
                 map = GetMapFromBytes(bytes, mid, mapRows, mapCols);
-                if (FindShortestPath(map, start, end) < 0)
+                if (FindShortestPath(map, start, end, false) < 0)
                 {
                     result = mid;
                     right = mid - 1;

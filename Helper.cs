@@ -351,8 +351,7 @@ namespace advent2024
             Up,
             Down,
             Left,
-            Right,
-            Invalid
+            Right
         }
 
         public static List<List<Point>> CharMapToAreas(char[,] map)
@@ -472,10 +471,71 @@ namespace advent2024
             return -1;
         }
 
+        public static List<Point> FindShortestPath(char[,] map, Point start, Point end)
+        {
+            PriorityQueue<State, int> queue = new PriorityQueue<State, int>();
+            HashSet<(Point, Direction)> visited = new HashSet<(Point, Direction)>();
+
+            foreach (Direction startDir in Enum.GetValues<Direction>())
+            {
+                Point offset = GetNextPoint(startDir);
+                Point nextPos = new Point(
+                    start.X + offset.X,
+                    start.Y + offset.Y
+                );
+
+                if (IsValidMove(map, nextPos))
+                {
+                    var initialPath = new List<Point> { start };
+                    State initialState = new State(start, startDir, 0, initialPath);
+                    queue.Enqueue(initialState, 0);
+                }
+            }
+
+            while (queue.Count > 0)
+            {
+                State currentState = queue.Dequeue();
+                (Point, Direction) stateKey = (currentState.Position, currentState.Direction);
+
+                if (visited.Contains(stateKey))
+                    continue;
+
+                visited.Add(stateKey);
+
+                if (currentState.Position.Equals(end))
+                    return currentState.Path;
+
+                List<Direction> possibleMoves = GetPossibleMoves(currentState.Direction);
+                foreach (Direction nextDir in possibleMoves)
+                {
+                    Point offset = GetNextPoint(nextDir);
+                    Point nextPos = new Point(
+                        currentState.Position.X + offset.X,
+                        currentState.Position.Y + offset.Y
+                    );
+
+                    if (!IsValidMove(map, nextPos))
+                        continue;
+
+                    int moveCost = 1;
+
+                    int nextCost = currentState.Cost + moveCost;
+
+                    var nextPath = new List<Point>(currentState.Path) { nextPos };
+
+                    State nextState = new State(nextPos, nextDir, nextCost, nextPath);
+
+                    if (!visited.Contains((nextPos, nextDir)))
+                        queue.Enqueue(nextState, nextState.Cost);
+                }
+            }
+
+            return new List<Point>();
+        }
+
         private static List<Direction> GetPossibleMoves(Direction currentDir, bool day16 = false)
         {
             List<Direction> moves = new List<Direction>();
-
             switch (currentDir)
             {
                 case Direction.Left or Direction.Right:
@@ -548,7 +608,7 @@ namespace advent2024
             return shortestPaths;
         }
 
-        private static Point GetNextPoint(Direction d)
+        public static Point GetNextPoint(Direction d)
         {
             Point nextP = new Point(0, 0);
             switch (d)
