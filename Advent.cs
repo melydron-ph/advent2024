@@ -1,6 +1,8 @@
 ﻿using advent2024.Days;
 
-Solver.RunAll();
+//Solver.RunAll();
+
+Solver.RunDay(21);
 
 Console.WriteLine("\nPress any key to exit...");
 Console.ReadKey();
@@ -52,8 +54,8 @@ public static class Solver
             return;
         }
 
-        try
-        {
+        //try
+        //{
             if (both)
             {
                 solutions[0]();
@@ -63,10 +65,10 @@ public static class Solver
             {
                 solutions[0]();
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error running Day {day}: {ex.Message}");
-        }
+        //}
+        //catch (Exception ex)
+        //{
+        //    Console.WriteLine($"Error running Day {day}: {ex.Message}");
+        //}
     }
 }

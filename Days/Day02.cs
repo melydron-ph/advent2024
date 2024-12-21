@@ -17,9 +17,8 @@ namespace advent2024.Days
         public static void SolvePart1()
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-            File.WriteAllText(OutputFile, string.Empty);
-
             var lines = File.ReadAllLines(InputFile);
+            File.WriteAllText(OutputFile, string.Empty);
             int result = 0;
 
             foreach (var line in lines)

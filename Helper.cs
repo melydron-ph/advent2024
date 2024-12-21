@@ -407,13 +407,15 @@ namespace advent2024
             public Direction Direction { get; }
             public int Cost { get; }
             public List<Point> Path { get; }
+            public List<Direction> DirectionalPath { get; }
 
-            public State(Point position, Direction direction, int cost, List<Point> path = null)
+            public State(Point position, Direction direction, int cost, List<Point> path = null, List<Direction> directionalPath = null)
             {
                 Position = position;
                 Direction = direction;
                 Cost = cost;
                 Path = path;
+                DirectionalPath = directionalPath;
             }
 
             public override bool Equals(object obj)
@@ -533,7 +535,9 @@ namespace advent2024
             return new List<Point>();
         }
 
-        private static List<Direction> GetPossibleMoves(Direction currentDir, bool day16 = false)
+
+
+        public static List<Direction> GetPossibleMoves(Direction currentDir, bool day16 = false)
         {
             List<Direction> moves = new List<Direction>();
             switch (currentDir)
@@ -633,7 +637,7 @@ namespace advent2024
             return nextP;
         }
 
-        private static bool IsValidMove(char[,] map, Point pos)
+        public static bool IsValidMove(char[,] map, Point pos)
         {
             int height = map.GetLength(0);
             int width = map.GetLength(1);
@@ -642,6 +646,9 @@ namespace advent2024
                    pos.Y >= 0 && pos.Y < width &&
                    map[pos.X, pos.Y] != '#';
         }
+
+
+        
 
     }
 }
