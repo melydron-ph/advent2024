@@ -348,9 +348,9 @@ namespace advent2024
 
         public enum Direction
         {
-            Up,
-            Down,
             Left,
+            Down,
+            Up,
             Right
         }
 

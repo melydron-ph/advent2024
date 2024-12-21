@@ -1,12 +1,5 @@
-﻿using System.Runtime.ExceptionServices;
-using System.Text.RegularExpressions;
-using System.Drawing;
+﻿using System.Drawing;
 using static advent2024.Helper;
-using System.Globalization;
-using System.IO;
-using static advent2024.Days.Day13;
-using System.ComponentModel;
-using System.Reflection;
 
 namespace advent2024.Days
 {
@@ -19,65 +12,61 @@ namespace advent2024.Days
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string numpadString = $"789\n456\n123\n#0A";
-            string[] rows = numpadString.Split('\n');
-            char[,] numpad = new char[rows.Length, rows[0].Length];
-            for (int i = 0; i < rows.Length; i++)
-            {
-                for (int j = 0; j < rows[i].Length; j++)
-                {
-                    numpad[i, j] = rows[i][j];
-                }
-            }
-            Dictionary<char, Point> charLocations = new Dictionary<char, Point>();
-            for (int i = 0; i < numpad.GetLength(0); i++)
-            {
-                for (int j = 0; j < numpad.GetLength(1); j++)
-                {
-                    charLocations[numpad[i, j]] = new Point(i, j);
-                }
-            }
-            HashSet<char> allChars = new HashSet<char>();
-            for (int i = 0; i < numpad.GetLength(0); i++)
-            {
-                for (int j = 0; j < numpad.GetLength(1); j++)
-                {
-                    if (numpad[i, j] != '#')
-                        allChars.Add(numpad[i, j]);
-                }
-            }
+            var numpadPaths = GetPadPaths(numpadString);
+            string dirpadString = $"#^A\n<v>";
+            var dirpadPaths = GetPadPaths(dirpadString);
+            long result = 0;
 
-            Dictionary<(char, char), List<Direction>> numpadPaths = new();
-
-            foreach (char c1 in allChars)
+            string[] codes = File.ReadAllLines(InputFile);
+            foreach (string code in codes)
             {
-                foreach (char c2 in allChars)
+                List<Direction> firstSteps = numpadPaths[('A', code[0])];
+                string shortSeq = string.Empty;
+                shortSeq += DirectionsToString(firstSteps) + "A";
+                for (int i = 0; i < code.Length - 1; i++)
                 {
-                    if (c1 != c2)
+                    char c1 = code[i];
+                    char c2 = code[i + 1];
+                    if (c1 == c2)
                     {
-                        Point p1 = charLocations[c1];
-                        Point p2 = charLocations[c2];
-                        List<Direction> directionalSteps = FindShortestPath(numpad, p1, p2);
-                        numpadPaths[(c1, c2)] = directionalSteps;
+                        shortSeq += "A";
+                    }
+                    else
+                    {
+                        List<Direction> steps = numpadPaths[(c1, c2)];
+                        shortSeq += DirectionsToString(steps) + "A";
                     }
                 }
-            }
-
-            foreach (var path in numpadPaths)
-            {
-                var (from, to) = path.Key;
-                var directions = path.Value.Select(d => d switch
+                int robotCount = 2;
+                string finalSeq = string.Empty;
+                for (int j = 0; j < robotCount; j++)
                 {
-                    Direction.Left => "<",
-                    Direction.Right => ">",
-                    Direction.Up => "^",
-                    Direction.Down => "v",
-                    _ => "?"
-                });
-
-                Console.WriteLine($"From {from} to {to}: {string.Join("", directions)}");
+                    firstSteps = dirpadPaths[('A', shortSeq[0])];
+                    finalSeq = string.Empty;
+                    finalSeq += DirectionsToString(firstSteps) + "A";
+                    for (int k = 0; k < shortSeq.Length - 1; k++)
+                    {
+                        char k1 = shortSeq[k];
+                        char k2 = shortSeq[k + 1];
+                        if (k1 == k2)
+                        {
+                            finalSeq += "A";
+                        }
+                        else
+                        {
+                            List<Direction> dirSteps = dirpadPaths[(k1, k2)];
+                            finalSeq += DirectionsToString(dirSteps) + "A";
+                        }
+                    }
+                    shortSeq = finalSeq;
+                }
+                int value = int.Parse(code.Substring(0, code.Length - 1));
+                int seqLength = finalSeq.Length;
+                Console.WriteLine($"{code}: {finalSeq}");
+                Console.WriteLine($"{code}: {seqLength} * {value}");
+                //Console.WriteLine($"{code}: {result} = {result} + {seqLength} * {value} = {result} + {seqLength * value} = {result + seqLength * value}");
+                result += (value * seqLength);
             }
-
-            int result = 0;
             stopwatch.Stop();
             Console.WriteLine($"21*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
@@ -91,15 +80,50 @@ namespace advent2024.Days
             Console.WriteLine($"21*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
-        //private class ShortestPath
-        //{
-        //    public char Orig { get; set; }
-        //    public char Dest { get; set; }
-        //    public int Steps { get; set; }
-        //    public List<Direction>? DirectionalSteps { get; set; }
-
-        //}
-
+        private static Dictionary<(char, char), List<Direction>> GetPadPaths(string padString)
+        {
+            string[] rows = padString.Split('\n');
+            char[,] pad = new char[rows.Length, rows[0].Length];
+            for (int i = 0; i < rows.Length; i++)
+            {
+                for (int j = 0; j < rows[i].Length; j++)
+                {
+                    pad[i, j] = rows[i][j];
+                }
+            }
+            Dictionary<char, Point> charLocations = new Dictionary<char, Point>();
+            for (int i = 0; i < pad.GetLength(0); i++)
+            {
+                for (int j = 0; j < pad.GetLength(1); j++)
+                {
+                    charLocations[pad[i, j]] = new Point(i, j);
+                }
+            }
+            HashSet<char> allChars = new HashSet<char>();
+            for (int i = 0; i < pad.GetLength(0); i++)
+            {
+                for (int j = 0; j < pad.GetLength(1); j++)
+                {
+                    if (pad[i, j] != '#')
+                        allChars.Add(pad[i, j]);
+                }
+            }
+            Dictionary<(char, char), List<Direction>> padPaths = new();
+            foreach (char c1 in allChars)
+            {
+                foreach (char c2 in allChars)
+                {
+                    if (c1 != c2)
+                    {
+                        Point p1 = charLocations[c1];
+                        Point p2 = charLocations[c2];
+                        List<Direction> directionalSteps = FindShortestPath(pad, p1, p2);
+                        padPaths[(c1, c2)] = directionalSteps;
+                    }
+                }
+            }
+            return padPaths;
+        }
 
         private static List<Direction>? FindShortestPath(char[,] map, Point start, Point end)
         {
@@ -148,8 +172,11 @@ namespace advent2024.Days
                     if (!IsValidMove(map, nextPos))
                         continue;
 
-                    int moveCost = 1;
-
+                    int moveCost = 2;
+                    if (nextDir == currentState.Direction)
+                    {
+                        moveCost = 1;
+                    }
                     int nextCost = currentState.Cost + moveCost;
 
                     var nextPath = new List<Point>(currentState.Path) { nextPos };
@@ -163,6 +190,17 @@ namespace advent2024.Days
             }
 
             return new List<Direction>();
+        }
+
+        private static string DirectionsToString(List<Direction> directions)
+        {
+            return string.Join("", directions.Select(d => d switch
+            {
+                Direction.Left => "<",
+                Direction.Right => ">",
+                Direction.Up => "^",
+                Direction.Down => "v",
+            }));
         }
 
     }
