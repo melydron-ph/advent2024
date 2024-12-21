@@ -5,204 +5,237 @@ namespace advent2024.Days
 {
     public static class Day21
     {
-        private static readonly string InputFile = @"C:\aoc\2024\day21\test.txt";
+        private static readonly string InputFile = @"C:\aoc\2024\day21\input.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day21\output.txt";
+
         public static void SolvePart1()
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
+
             string numpadString = $"789\n456\n123\n#0A";
-            var numpadPaths = GetPadPaths(numpadString);
             string dirpadString = $"#^A\n<v>";
-            var dirpadPaths = GetPadPaths(dirpadString);
+            var numKeypadMoves = GetPadPaths(numpadString.Split('\n'));
+            var dirKeypadMoves = GetPadPaths(dirpadString.Split('\n'));
+            var filteredNumMoves = numKeypadMoves.Where(kvp => !dirKeypadMoves.ContainsKey(kvp.Key));
+            var allMoves = filteredNumMoves.Concat(dirKeypadMoves).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            int robotNum = 2;
+            long result = GetResultForCodes(allMoves, robotNum);
+            stopwatch.Stop();
+            Console.WriteLine($"21*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
+        }
+
+        public static void SolvePart2()
+        {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            string numpadString = $"789\n456\n123\n#0A";
+            string dirpadString = $"#^A\n<v>";
+            var numKeypadMoves = GetPadPaths(numpadString.Split('\n'));
+            var dirKeypadMoves = GetPadPaths(dirpadString.Split('\n'));
+
+            var filteredNumMoves = numKeypadMoves.Where(kvp => !dirKeypadMoves.ContainsKey(kvp.Key));
+            var allMoves = filteredNumMoves.Concat(dirKeypadMoves).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            var resultCache = new Dictionary<(int level, string key), long>();
+            int robotNum = 25;
+            long result = GetResultForCodes(allMoves, robotNum);
+            stopwatch.Stop();
+            Console.WriteLine($"21*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
+        }
+
+        private static long GetResultForCodes(Dictionary<(char from, char to), string[]> allMoves, int robotNum)
+        {
+
+            var resultCache = new Dictionary<(int level, string key), long>();
             long result = 0;
 
             string[] codes = File.ReadAllLines(InputFile);
             foreach (string code in codes)
             {
-                List<Direction> firstSteps = numpadPaths[('A', code[0])];
-                string shortSeq = string.Empty;
-                shortSeq += DirectionsToString(firstSteps) + "A";
-                for (int i = 0; i < code.Length - 1; i++)
-                {
-                    char c1 = code[i];
-                    char c2 = code[i + 1];
-                    if (c1 == c2)
-                    {
-                        shortSeq += "A";
-                    }
-                    else
-                    {
-                        List<Direction> steps = numpadPaths[(c1, c2)];
-                        shortSeq += DirectionsToString(steps) + "A";
-                    }
-                }
-                int robotCount = 2;
-                string finalSeq = string.Empty;
-                for (int j = 0; j < robotCount; j++)
-                {
-                    firstSteps = dirpadPaths[('A', shortSeq[0])];
-                    finalSeq = string.Empty;
-                    finalSeq += DirectionsToString(firstSteps) + "A";
-                    for (int k = 0; k < shortSeq.Length - 1; k++)
-                    {
-                        char k1 = shortSeq[k];
-                        char k2 = shortSeq[k + 1];
-                        if (k1 == k2)
-                        {
-                            finalSeq += "A";
-                        }
-                        else
-                        {
-                            List<Direction> dirSteps = dirpadPaths[(k1, k2)];
-                            finalSeq += DirectionsToString(dirSteps) + "A";
-                        }
-                    }
-                    shortSeq = finalSeq;
-                }
                 int value = int.Parse(code.Substring(0, code.Length - 1));
-                int seqLength = finalSeq.Length;
-                Console.WriteLine($"{code}: {finalSeq}");
-                Console.WriteLine($"{code}: {seqLength} * {value}");
-                //Console.WriteLine($"{code}: {result} = {result} + {seqLength} * {value} = {result} + {seqLength * value} = {result + seqLength * value}");
-                result += (value * seqLength);
+                long seqLength = ShortestMoves(code, 0, robotNum, resultCache, allMoves);
+                result += value * seqLength;
             }
-            stopwatch.Stop();
-            Console.WriteLine($"21*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
-        }
-        public static void SolvePart2()
-        {
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-            File.WriteAllText(OutputFile, string.Empty);
-            string[] lines = File.ReadAllLines(InputFile);
-            int result = 0;
-            stopwatch.Stop();
-            Console.WriteLine($"21*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
+            return result;
         }
 
-        private static Dictionary<(char, char), List<Direction>> GetPadPaths(string padString)
+        private static long ShortestMoves(string current, int level, int stopAtLevel,
+            Dictionary<(int level, string key), long> cache, Dictionary<(char from, char to), string[]> moves)
         {
-            string[] rows = padString.Split('\n');
-            char[,] pad = new char[rows.Length, rows[0].Length];
-            for (int i = 0; i < rows.Length; i++)
+            if (string.IsNullOrEmpty(current)) return 0;
+            if (cache.TryGetValue((level, current), out var cachedResult)) return cachedResult;
+
+            if (level == stopAtLevel)
             {
-                for (int j = 0; j < rows[i].Length; j++)
-                {
-                    pad[i, j] = rows[i][j];
-                }
+                var result = GetSequences(current, moves).Select(a => a.Length).Min();
+                cache.Add((level, current), result);
+                return result;
             }
-            Dictionary<char, Point> charLocations = new Dictionary<char, Point>();
-            for (int i = 0; i < pad.GetLength(0); i++)
+
+            var firstA = current.IndexOf('A');
+            var firstPart = current.Substring(0, firstA + 1);
+            var secondPart = current.Substring(firstA + 1);
+
+            long shortest = -1;
+            var possibilities = GetSequences(firstPart, moves);
+
+            foreach (var seq in possibilities)
             {
-                for (int j = 0; j < pad.GetLength(1); j++)
-                {
-                    charLocations[pad[i, j]] = new Point(i, j);
-                }
+                long count = ShortestMoves(seq, level + 1, stopAtLevel, cache, moves);
+                if (shortest > count || shortest == -1) shortest = count;
             }
-            HashSet<char> allChars = new HashSet<char>();
-            for (int i = 0; i < pad.GetLength(0); i++)
+
+            if (!string.IsNullOrEmpty(secondPart))
             {
-                for (int j = 0; j < pad.GetLength(1); j++)
-                {
-                    if (pad[i, j] != '#')
-                        allChars.Add(pad[i, j]);
-                }
+                shortest += ShortestMoves(secondPart, level, stopAtLevel, cache, moves);
             }
-            Dictionary<(char, char), List<Direction>> padPaths = new();
-            foreach (char c1 in allChars)
+
+            cache.Add((level, current), shortest);
+            return shortest;
+        }
+
+        private static List<string> GetSequences(string entryCode, Dictionary<(char from, char to), string[]> keypadMoves)
+        {
+            var sequence = new List<string>() { "" };
+            char prevKey = 'A';
+
+            foreach (var key in entryCode)
             {
-                foreach (char c2 in allChars)
+                var newSequence = new List<string>();
+                var moves = keypadMoves[(prevKey, key)];
+
+                foreach (var prevStrokes in sequence)
                 {
-                    if (c1 != c2)
+                    foreach (var nextStroke in moves)
                     {
-                        Point p1 = charLocations[c1];
-                        Point p2 = charLocations[c2];
-                        List<Direction> directionalSteps = FindShortestPath(pad, p1, p2);
-                        padPaths[(c1, c2)] = directionalSteps;
+                        newSequence.Add(prevStrokes + nextStroke + 'A');
+                    }
+                }
+
+                prevKey = key;
+                sequence = newSequence;
+            }
+
+            return sequence;
+        }
+
+        private static char ReverseDirection(char direction)
+        {
+            return direction switch
+            {
+                '>' => '<',
+                '<' => '>',
+                '^' => 'v',
+                'v' => '^',
+                _ => direction
+            };
+        }
+
+        private static string GetReversePath(string path)
+        {
+            var reversedChars = path.Reverse();
+
+            var oppositeDirections = reversedChars.Select(ReverseDirection);
+
+            return string.Concat(oppositeDirections);
+        }
+
+        private static Dictionary<(char from, char to), string[]> GetPadPaths(string[] keypad)
+        {
+            var keypadMoves = new Dictionary<(char from, char to), string[]>();
+            var charLocations = new Dictionary<char, (int x, int y)>();
+            var validKeys = new HashSet<char>();
+
+            for (int i = 0; i < keypad[0].Length; i++)
+            {
+                for (int j = 0; j < keypad.Length; j++)
+                {
+                    char currentKey = keypad[j][i];
+                    if (currentKey != '#')
+                    {
+                        validKeys.Add(currentKey);
+                        charLocations[currentKey] = (i, j);
                     }
                 }
             }
-            return padPaths;
-        }
 
-        private static List<Direction>? FindShortestPath(char[,] map, Point start, Point end)
-        {
-            PriorityQueue<State, int> queue = new PriorityQueue<State, int>();
-            HashSet<(Point, Direction)> visited = new HashSet<(Point, Direction)>();
-
-            foreach (Direction startDir in Enum.GetValues<Direction>())
+            foreach (char fromKey in validKeys)
             {
-                Point offset = GetNextPoint(startDir);
-                Point nextPos = new Point(
-                    start.X + offset.X,
-                    start.Y + offset.Y
-                );
+                var startPos = charLocations[fromKey];
 
-                if (IsValidMove(map, nextPos))
+                foreach (char toKey in validKeys)
                 {
-                    var initialPath = new List<Point> { start };
-                    var initialDirections = new List<Direction>();
-                    State initialState = new State(start, startDir, 0, initialPath, initialDirections);
-                    queue.Enqueue(initialState, 0);
-                }
-            }
-
-            while (queue.Count > 0)
-            {
-                State currentState = queue.Dequeue();
-                (Point, Direction) stateKey = (currentState.Position, currentState.Direction);
-
-                if (visited.Contains(stateKey))
-                    continue;
-
-                visited.Add(stateKey);
-
-                if (currentState.Position.Equals(end))
-                    return currentState.DirectionalPath;
-
-                List<Direction> possibleMoves = GetPossibleMoves(currentState.Direction);
-                foreach (Direction nextDir in possibleMoves)
-                {
-                    Point offset = GetNextPoint(nextDir);
-                    Point nextPos = new Point(
-                        currentState.Position.X + offset.X,
-                        currentState.Position.Y + offset.Y
-                    );
-
-                    if (!IsValidMove(map, nextPos))
+                    if (keypadMoves.ContainsKey((fromKey, toKey)))
                         continue;
 
-                    int moveCost = 2;
-                    if (nextDir == currentState.Direction)
+                    var state = new Dictionary<(int x, int y), (int cost, HashSet<string> options)>();
+                    var work = new PriorityQueue<(int x, int y), int>();
+
+                    work.Enqueue((startPos.x, startPos.y), 0);
+                    state.Add(startPos, (0, new HashSet<string> { "" }));
+
+                    while (work.Count > 0)
                     {
-                        moveCost = 1;
+                        var (currentX, currentY) = work.Dequeue();
+                        var currentState = state[(currentX, currentY)];
+
+                        if (keypad[currentY][currentX] == toKey)
+                        {
+                            keypadMoves.Add((fromKey, toKey), currentState.options.ToArray());
+
+                            if (fromKey != toKey)
+                            {
+                                var reverseOptions = new HashSet<string>();
+                                foreach (string path in currentState.options)
+                                {
+                                    string reversePath = GetReversePath(path);
+                                    reverseOptions.Add(reversePath);
+                                }
+                                keypadMoves.Add((toKey, fromKey), reverseOptions.ToArray());
+                            }
+                            break;
+                        }
+
+                        var moves = new[] {
+                            (x: currentX + 1, y: currentY, dir: '>'),
+                            (x: currentX - 1, y: currentY, dir: '<'),
+                            (x: currentX, y: currentY + 1, dir: 'v'),
+                            (x: currentX, y: currentY - 1, dir: '^')
+                        };
+
+                        foreach (var (moveX, moveY, direction) in moves)
+                        {
+                            if (moveX < 0 || moveY < 0 || moveX >= keypad[0].Length || moveY >= keypad.Length)
+                                continue;
+                            if (keypad[moveY][moveX] == ' ' || keypad[moveY][moveX] == '#')
+                                continue;
+
+                            int newCost = currentState.cost + 1;
+                            bool seenBefore = state.TryGetValue((moveX, moveY), out var nextState);
+
+                            if (!seenBefore)
+                            {
+                                nextState = (newCost, new HashSet<string>());
+                                state[(moveX, moveY)] = nextState;
+                            }
+
+                            if (newCost == nextState.cost)
+                            {
+                                foreach (string path in currentState.options)
+                                {
+                                    nextState.options.Add(path + direction);
+                                }
+
+                                if (!seenBefore)
+                                {
+                                    work.Enqueue((moveX, moveY), newCost);
+                                }
+                            }
+                        }
                     }
-                    int nextCost = currentState.Cost + moveCost;
-
-                    var nextPath = new List<Point>(currentState.Path) { nextPos };
-                    var nextDirectionalPath = new List<Direction>(currentState.DirectionalPath) { nextDir };
-
-                    State nextState = new State(nextPos, nextDir, nextCost, nextPath, nextDirectionalPath);
-
-                    if (!visited.Contains((nextPos, nextDir)))
-                        queue.Enqueue(nextState, nextState.Cost);
                 }
             }
-
-            return new List<Direction>();
+            return keypadMoves;
         }
-
-        private static string DirectionsToString(List<Direction> directions)
-        {
-            return string.Join("", directions.Select(d => d switch
-            {
-                Direction.Left => "<",
-                Direction.Right => ">",
-                Direction.Up => "^",
-                Direction.Down => "v",
-            }));
-        }
-
     }
-
 }
