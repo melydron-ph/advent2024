@@ -2,7 +2,7 @@
 
 //Solver.RunAll();
 
-Solver.RunDay(21);
+Solver.RunDay(22);
 
 Console.WriteLine("\nPress any key to exit...");
 Console.ReadKey();
