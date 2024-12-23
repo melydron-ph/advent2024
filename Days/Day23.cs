@@ -18,26 +18,7 @@ namespace advent2024.Days
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
-            string[] lines = File.ReadAllLines(InputFile);
-
-            Dictionary<string, HashSet<string>> connections = new ();
-
-            foreach (string line in lines)
-            {
-                string[] pcs = line.Trim().Split('-');
-                if (!connections.ContainsKey(pcs[0]))
-                {
-                    connections[pcs[0]] = new HashSet<string>();
-                }
-                connections[pcs[0]].Add(pcs[1]);
-                if (!connections.ContainsKey(pcs[1]))
-                {
-                    connections[pcs[1]] = new HashSet<string>();
-                }
-                connections[pcs[1]].Add(pcs[0]);
-            }
-            
-            //PrintConnections(connections);
+            Dictionary<string, HashSet<string>> connections = GetConnectionsFromFile(InputFile);
             HashSet<HashSet<string>> sets = FindSetsOfThreeForChar(connections, 't');
             stopwatch.Stop();
             Console.WriteLine($"23*1 -- {sets.Count()} ({stopwatch.ElapsedMilliseconds} ms)");
@@ -46,6 +27,15 @@ namespace advent2024.Days
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
+            Dictionary<string, HashSet<string>> connections = GetConnectionsFromFile(InputFile);
+            HashSet<string> set = FindLargestCliqueWithBronKerbosch(connections);
+            stopwatch.Stop();
+            Console.WriteLine($"23*2 -- {string.Join(",", set.OrderBy(x => x))} ({stopwatch.ElapsedMilliseconds} ms)");
+        }
+
+
+        private static Dictionary<string, HashSet<string>> GetConnectionsFromFile(string inputFile)
+        {
             string[] lines = File.ReadAllLines(InputFile);
 
             Dictionary<string, HashSet<string>> connections = new();
@@ -64,11 +54,7 @@ namespace advent2024.Days
                 }
                 connections[pcs[1]].Add(pcs[0]);
             }
-
-            //PrintConnections(connections);
-            HashSet<string> set = FindLargestCliqueWithBronKerbosch(connections);
-            stopwatch.Stop();
-            Console.WriteLine($"23*2 -- {string.Join(",", set.OrderBy(x => x))} ({stopwatch.ElapsedMilliseconds} ms)");
+            return connections;
         }
 
         private static void PrintConnections(Dictionary<string, HashSet<string>> connections)
@@ -90,7 +76,7 @@ namespace advent2024.Days
                 {
                     foreach (string n2 in neighbors)
                     {
-                        if (n1 == n2) 
+                        if (n1 == n2)
                             continue;
                         if (connections[n1].Contains(n2))
                             sets.Add(new HashSet<string> { cNode, n1, n2 });
