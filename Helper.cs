@@ -648,7 +648,59 @@ namespace advent2024
         }
 
 
-        
+        public class Wire
+        {
+            public string Name { get; set; }
+            public bool? Value { get; set; }
+
+            public Wire(string name, bool? value = null)
+            {
+                Name = name;
+                Value = value;
+            }
+
+            public override string ToString() => $"{Name}: {(Value.HasValue ? (Value.Value ? "1" : "0") : "?")}";
+        }
+
+        public enum GateType
+        {
+            AND,
+            OR,
+            XOR
+        }
+
+        public class Gate
+        {
+            public GateType Type { get; }
+            public Wire Input1 { get; }
+            public Wire Input2 { get; }
+            public Wire Output { get; }
+
+            public Gate(Wire input1, Wire input2, Wire output, GateType type)
+            {
+                Input1 = input1;
+                Input2 = input2;
+                Output = output;
+                Type = type;
+            }
+            public bool CanEvaluate => Input1.Value.HasValue && Input2.Value.HasValue && !Output.Value.HasValue;
+            public void Evaluate()
+            {
+                if (!CanEvaluate)
+                    return;
+
+                Output.Value = Type switch
+                {
+                    GateType.AND => Input1.Value.Value && Input2.Value.Value,
+                    GateType.OR => Input1.Value.Value || Input2.Value.Value,
+                    GateType.XOR => Input1.Value.Value ^ Input2.Value.Value
+                };
+            }
+
+            public override string ToString() => $"{Input1.Name} {Type} {Input2.Name} -> {Output.Name}";
+        }
+
+
 
     }
 }
