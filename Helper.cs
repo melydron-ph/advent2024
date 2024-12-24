@@ -700,6 +700,132 @@ namespace advent2024
             public override string ToString() => $"{Input1.Name} {Type} {Input2.Name} -> {Output.Name}";
         }
 
+        public class GateAnalyzer
+        {
+            public class GateConnection
+            {
+                public Gate Gate { get; set; }
+                public List<Gate> OutputConnections { get; set; } = new List<Gate>();
+                public bool IsOutput { get; set; }
+
+                public GateConnection(Gate gate)
+                {
+                    Gate = gate;
+                }
+            }
+
+            public static void AnalyzeGateConnections(List<Gate> gates)
+            {
+                // Build connection map
+                Dictionary<string, GateConnection> gateConnections = new();
+
+                // Initialize all gates
+                foreach (var gate in gates)
+                {
+                    if (!gateConnections.ContainsKey(gate.Output.Name))
+                    {
+                        gateConnections[gate.Output.Name] = new GateConnection(gate);
+                    }
+                }
+
+                // Map output connections
+                foreach (var gate in gates)
+                {
+                    // Check Input1 connections
+                    if (gateConnections.ContainsKey(gate.Input1.Name))
+                    {
+                        gateConnections[gate.Input1.Name].OutputConnections.Add(gate);
+                    }
+
+                    // Check Input2 connections
+                    if (gateConnections.ContainsKey(gate.Input2.Name))
+                    {
+                        gateConnections[gate.Input2.Name].OutputConnections.Add(gate);
+                    }
+                }
+
+                // Mark final output gates (those that feed into z wires)
+                foreach (var conn in gateConnections.Values)
+                {
+                    conn.IsOutput = conn.Gate.Output.Name.StartsWith("z");
+                }
+
+                // Analyze each gate's connections
+                foreach (var conn in gateConnections.Values)
+                {
+                    AnalyzeGate(conn);
+                }
+            }
+
+            private static void AnalyzeGate(GateConnection conn)
+            {
+                switch (conn.Gate.Type)
+                {
+                    case GateType.OR:
+                        ValidateORGate(conn);
+                        break;
+                    case GateType.AND:
+                        ValidateANDGate(conn);
+                        break;
+                    case GateType.XOR:
+                        ValidateXORGate(conn);
+                        break;
+                }
+            }
+
+            private static void ValidateORGate(GateConnection conn)
+            {
+                if (conn.IsOutput)
+                {
+                    Console.WriteLine($"WARNING: OR gate {conn.Gate} feeds directly into output - this is unusual for a binary adder");
+                    return;
+                }
+
+                bool hasXORConnection = false;
+                bool hasANDConnection = false;
+
+                foreach (var outputGate in conn.OutputConnections)
+                {
+                    if (outputGate.Type == GateType.XOR) hasXORConnection = true;
+                    if (outputGate.Type == GateType.AND) hasANDConnection = true;
+                }
+
+                if (!hasXORConnection || !hasANDConnection)
+                {
+                    Console.WriteLine($"WARNING: OR gate {conn.Gate} should feed into both XOR and AND gates, but found XOR:{hasXORConnection}, AND:{hasANDConnection}");
+                }
+            }
+
+            private static void ValidateANDGate(GateConnection conn)
+            {
+                if (conn.IsOutput)
+                {
+                    // This is fine - AND gates can feed into the final output
+                    return;
+                }
+
+                bool hasORConnection = false;
+                foreach (var outputGate in conn.OutputConnections)
+                {
+                    if (outputGate.Type == GateType.OR) hasORConnection = true;
+                }
+
+                if (!hasORConnection)
+                {
+                    Console.WriteLine($"WARNING: AND gate {conn.Gate} should feed into an OR gate for carry propagation");
+                }
+            }
+
+            private static void ValidateXORGate(GateConnection conn)
+            {
+                if (!conn.IsOutput && conn.OutputConnections.Count == 0)
+                {
+                    Console.WriteLine($"WARNING: XOR gate {conn.Gate} has no output connections");
+                }
+
+                // XOR gates can feed into either output or other gates in more complex adders
+            }
+        }
 
 
     }

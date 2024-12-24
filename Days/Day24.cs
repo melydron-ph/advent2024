@@ -14,7 +14,7 @@ namespace advent2024.Days
 {
     public static class Day24
     {
-        private static readonly string InputFile = @"C:\aoc\2024\day24\input.txt";
+        private static readonly string InputFile = @"C:\aoc\2024\day24\input2.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day24\output.txt";
         public static void SolvePart1()
         {
@@ -34,6 +34,7 @@ namespace advent2024.Days
             Dictionary<string, Wire> wires;
             List<Gate> gates;
             GetWiresAndGates(InputFile, out wires, out gates);
+            //PrintZPaths(wires, gates);
             long num1 = GetWiresValue(wires, 'x');
             long num2 = GetWiresValue(wires, 'y');
             long expectedResult = num1 + num2;
@@ -43,44 +44,12 @@ namespace advent2024.Days
             }
             int bitLength = wires.Count(w => w.Key.StartsWith("z"));
             long currentResult = GetGatesResult(wires, gates);
-            AnalyzeBitDifferences(expectedResult, currentResult, bitLength);
-            AnalyzeSwapEffects(wires, gates, expectedResult, bitLength);
-            //if (expectedResult != currentResult)
-            //{
-            //    //Console.WriteLine($"Current circuit result: {currentResult}");
-            //    //Console.WriteLine($"Expected result: {expectedResult}");
-            //    for (int i = 0; i < gates.Count; i++)
-            //    {
-            //        for (int j = 0; j < gates.Count; j++)
-            //        {
-            //            if (j == i) continue;  // Skip same gate
+            GateAnalyzer.AnalyzeGateConnections(gates);
 
-            //            for (int k = 0; k < gates.Count; k++)
-            //            {
-            //                if (k == i || k == j) continue;  // Skip already used gates
-
-            //                for (int l = 0; l < gates.Count; l++)
-            //                {
-            //                    if (l == i || l == j || l == k) continue;  // Skip already used gates
-            //                    var testWires = CloneWires(wires);
-            //                    var testGates = CloneGates(gates, testWires);
-            //                    //Console.WriteLine($"Trying: {testGates[i].Output.Name} <-> {testGates[j].Output.Name} and {testGates[k].Output.Name} <-> {testGates[l].Output.Name}");
-            //                    SwapGateOutputs(testGates[i], testGates[j]);
-            //                    SwapGateOutputs(testGates[k], testGates[l]);
-            //                    long result = GetGatesResult(testWires, testGates);
-            //                    //Console.WriteLine($"Result after swap: {result}");
-            //                    if (result == expectedResult)
-            //                    {
-            //                        Console.WriteLine($"\n!!");
-            //                        Console.WriteLine($"Pair 1: {gates[i]} , {gates[j]}");
-            //                        Console.WriteLine($"Pair 2: {gates[k]} , {gates[l]}");
-            //                        return;
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+            //AnalyzeBitDifferences(expectedResult, currentResult, bitLength);
+            //AnalyzeSequentially(wires, gates, expectedResult, bitLength);
+            //TryFixSequentially(wires, gates, expectedResult, bitLength, 32, new List<SwapCandidate>());
+            //AnalyzeSwapEffects(wires, gates, expectedResult, bitLength);
             stopwatch.Stop();
             //int result = 0;
             Console.WriteLine($"24*2 -- ({stopwatch.ElapsedMilliseconds} ms)");
@@ -213,6 +182,8 @@ namespace advent2024.Days
                     Console.WriteLine($"Bit position {bitLength - 1 - i} is wrong (z{(bitLength - 1 - i).ToString().PadLeft(2, '0')})");
                 }
             }
+            Console.WriteLine($"Total wrong: {wrongPositions.Count()}");
+
         }
 
         private class SwapInfo
@@ -297,20 +268,25 @@ namespace advent2024.Days
 
             for (int i = 0; i < swaps.Count; i++)
             {
+                var usedWires = new HashSet<string> { swaps[i].Wire1, swaps[i].Wire2 };
                 for (int j = i + 1; j < swaps.Count; j++)
                 {
+                    if (usedWires.Contains(swaps[j].Wire1) || usedWires.Contains(swaps[j].Wire2))
+                        continue;
+                    var usedWires2 = new HashSet<string>(usedWires);
+                    usedWires2.Add(swaps[j].Wire1);
+                    usedWires2.Add(swaps[j].Wire2);
                     for (int k = j + 1; k < swaps.Count; k++)
                     {
+                        if (usedWires2.Contains(swaps[k].Wire1) || usedWires2.Contains(swaps[k].Wire2))
+                            continue;
+                        var usedWires3 = new HashSet<string>(usedWires2);
+                        usedWires3.Add(swaps[k].Wire1);
+                        usedWires3.Add(swaps[k].Wire2);
                         for (int l = k + 1; l < swaps.Count; l++)
                         {
-                            var usedWires = new HashSet<string>
-                    {
-                        swaps[i].Wire1, swaps[i].Wire2,
-                        swaps[j].Wire1, swaps[j].Wire2,
-                        swaps[k].Wire1, swaps[k].Wire2,
-                        swaps[l].Wire1, swaps[l].Wire2
-                    };
-                            if (usedWires.Count != 8) continue;
+                            if (usedWires3.Contains(swaps[l].Wire1) || usedWires3.Contains(swaps[l].Wire2))
+                                continue;
 
                             var testWires = CloneWires(wires);
                             var testGates = CloneGates(gates, testWires);
@@ -363,6 +339,232 @@ namespace advent2024.Days
         {
             return gates.First(g => g.Output.Name == outputName);
         }
+
+        private class GatePath
+        {
+            public string Output { get; }
+            public Gate Gate { get; }
+            public List<GatePath> InputPaths { get; }
+
+            public GatePath(string output, Gate gate, List<GatePath> inputPaths)
+            {
+                Output = output;
+                Gate = gate;
+                InputPaths = inputPaths;
+            }
+        }
+
+        private static void PrintZPaths(Dictionary<string, Wire> wires, List<Gate> gates)
+        {
+            var zWires = wires.Keys.Where(w => w.StartsWith("z")).OrderBy(w => w).ToList();
+            var lines = new List<string>();
+            foreach (var zWire in zWires)
+            {
+                lines.Add($"\nTracing path for {zWire}:");
+                //Console.WriteLine($"\nTracing path for {zWire}:");
+                var gate = gates.First(g => g.Output.Name == zWire);
+                PrintGatePath(gate, gates, "", new HashSet<string>(), lines);
+            }
+
+            File.WriteAllLines(OutputFile, lines);
+        }
+
+        private static void PrintGatePath(Gate gate, List<Gate> gates, string indent, HashSet<string> visited, List<string> lines)
+        {
+            if (visited.Contains(gate.Output.Name))
+            {
+                lines.Add($"{indent}{gate.Output.Name} (circular reference!)");
+                //Console.WriteLine($"{indent}{gate.Output.Name} (circular reference!)");
+                return;
+            }
+
+            visited.Add(gate.Output.Name);
+
+            lines.Add($"{indent}{gate.Output.Name} = {gate.Input1.Name} {gate.Type} {gate.Input2.Name}");
+            //Console.WriteLine($"{indent}{gate.Output.Name} = {gate.Input1.Name} {gate.Type} {gate.Input2.Name}");
+
+            // Follow input1 if it's an intermediate wire
+            var input1Gate = gates.FirstOrDefault(g => g.Output.Name == gate.Input1.Name);
+            if (input1Gate != null)
+            {
+                PrintGatePath(input1Gate, gates, indent + "  ", new HashSet<string>(visited), lines);
+            }
+
+            // Follow input2 if it's an intermediate wire
+            var input2Gate = gates.FirstOrDefault(g => g.Output.Name == gate.Input2.Name);
+            if (input2Gate != null)
+            {
+                PrintGatePath(input2Gate, gates, indent + "  ", new HashSet<string>(visited), lines );
+            }
+        }
+
+        private static void AnalyzeSequentially(Dictionary<string, Wire> wires, List<Gate> gates, long expectedResult, int bitLength)
+        {
+            string expectedBits = Convert.ToString(expectedResult, 2).PadLeft(bitLength, '0');
+            string currentBits = Convert.ToString(GetGatesResult(wires, gates), 2).PadLeft(bitLength, '0');
+
+            // start with 32
+            int position = 32;
+            int stringPos = bitLength - position - 1;  // Convert bit position to string position
+
+            Console.WriteLine($"\nTrying to fix bit position {position}");
+            Console.WriteLine($"Expected bits: {expectedBits.Substring(0, stringPos + 1)}");
+            Console.WriteLine($"Current bits:  {currentBits.Substring(0, stringPos + 1)}");
+
+            for (int i = 0; i < gates.Count; i++)
+            {
+                for (int j = i + 1; j < gates.Count; j++)
+                {
+                    var testWires = CloneWires(wires);
+                    var testGates = CloneGates(gates, testWires);
+
+                    string wire1 = testGates[i].Output.Name;
+                    string wire2 = testGates[j].Output.Name;
+
+                    SwapGateOutputs(testGates[i], testGates[j]);
+
+                    long result = GetGatesResult(testWires, testGates);
+                    string resultBits = Convert.ToString(result, 2).PadLeft(bitLength, '0');
+
+                    bool fixedTargetBit = resultBits[stringPos] == expectedBits[stringPos];
+                    bool brokeEarlierBits = false;
+
+                    for (int bit = bitLength - 1; bit > stringPos; bit--)
+                    {
+                        if (resultBits[bit] != currentBits[bit])
+                        {
+                            brokeEarlierBits = true;
+                            break;
+                        }
+                    }
+
+                    if (fixedTargetBit && !brokeEarlierBits)
+                    {
+                        Console.WriteLine($"\nFound swap that fixes bit {position}:");
+                        Console.WriteLine($"{wire1} <-> {wire2}");
+                        Console.WriteLine($"Result bits:  {resultBits.Substring(0, stringPos + 1)}");
+                    }
+                }
+            }
+        }
+
+        private class SwapCandidate
+        {
+            public string Wire1 { get; }
+            public string Wire2 { get; }
+            public string ResultBits { get; }
+
+            public SwapCandidate(string wire1, string wire2, string resultBits)
+            {
+                Wire1 = wire1;
+                Wire2 = wire2;
+                ResultBits = resultBits;
+            }
+
+            public override string ToString() => $"{Wire1} <-> {Wire2}";
+        }
+
+        private static void TryFixSequentially(Dictionary<string, Wire> wires, List<Gate> gates, long expectedResult, int bitLength, int position, List<SwapCandidate> previousSwaps)
+        {
+            string expectedBits = Convert.ToString(expectedResult, 2).PadLeft(bitLength, '0');
+
+            // Apply previous swaps
+            var testWires = CloneWires(wires);
+            var testGates = CloneGates(gates, testWires);
+            foreach (var swap in previousSwaps)
+            {
+                SwapGateOutputs(FindGate(testGates, swap.Wire1), FindGate(testGates, swap.Wire2));
+            }
+
+            string currentBits = Convert.ToString(GetGatesResult(testWires, testGates), 2).PadLeft(bitLength, '0');
+            int stringPos = bitLength - position - 1;
+
+            Console.WriteLine($"\nTrying to fix bit {position} after {previousSwaps.Count} previous swaps:");
+            foreach (var swap in previousSwaps)
+            {
+                Console.WriteLine($"Previous swap: {swap}");
+            }
+
+            var candidates = new List<SwapCandidate>();
+
+            // Try all possible swaps
+            for (int i = 0; i < gates.Count; i++)
+            {
+                for (int j = i + 1; j < gates.Count; j++)
+                {
+                    var nextWires = CloneWires(testWires);
+                    var nextGates = CloneGates(testGates, nextWires);
+
+                    string wire1 = nextGates[i].Output.Name;
+                    string wire2 = nextGates[j].Output.Name;
+
+                    // Skip if we've used either wire in previous swaps
+                    if (previousSwaps.Any(s => s.Wire1 == wire1 || s.Wire2 == wire1 ||
+                                             s.Wire1 == wire2 || s.Wire2 == wire2))
+                        continue;
+
+                    SwapGateOutputs(nextGates[i], nextGates[j]);
+
+                    long result = GetGatesResult(nextWires, nextGates);
+                    string resultBits = Convert.ToString(result, 2).PadLeft(bitLength, '0');
+
+                    // Count how many bits this swap fixes
+                    int bitsFixed = 0;
+                    bool fixedCheckBit = resultBits[stringPos] == expectedBits[stringPos];
+                    bool brokeEarlierBits = false;
+
+                    // First make sure it fixed our check bit
+                    if (!fixedCheckBit)
+                        continue;
+
+                    bitsFixed = 1;  // We know we fixed check bit
+
+                    // Check if it fixed any additional bit positions without breaking earlier ones
+                    for (int bit = stringPos - 1; bit >= 0; bit--)
+                    {
+                        if (resultBits[bit] == expectedBits[bit] && currentBits[bit] != expectedBits[bit])
+                            bitsFixed++;
+                    }
+
+                    // Check if it broke any earlier bits
+                    for (int bit = bitLength - 1; bit > stringPos; bit--)
+                    {
+                        if (resultBits[bit] != currentBits[bit])
+                        {
+                            brokeEarlierBits = true;
+                            break;
+                        }
+                    }
+
+                    if (bitsFixed >= 2 && !brokeEarlierBits)  // At least 2 bits fixed (including check bit)
+                    {
+                        candidates.Add(new SwapCandidate(wire1, wire2, resultBits));
+                        Console.WriteLine($"Found candidate: {wire1} <-> {wire2}");
+                        Console.WriteLine($"Result bits:    {resultBits.Substring(0, stringPos + 1)}");
+                        Console.WriteLine($"Fixed {bitsFixed} bits (including bit {position})");
+                    }
+                }
+            }
+
+            // Proceed with candidates
+            foreach (var candidate in candidates)
+            {
+                var newSwaps = new List<SwapCandidate>(previousSwaps) { candidate };
+                if (position < 41)
+                {
+                    TryFixSequentially(wires, gates, expectedResult, bitLength, position + 1, newSwaps);
+                }
+                else
+                {
+                    Console.WriteLine("\nFound complete solution!");
+                    foreach (var swap in newSwaps)
+                    {
+                        Console.WriteLine(swap);
+                    }
+                }
+            }
+        }
+
 
     }
 

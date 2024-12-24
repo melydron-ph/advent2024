@@ -48,8 +48,8 @@ namespace advent2024
                 Console.WriteLine($"Day {day} solutions not found.");
                 return;
             }
-            try
-            {
+            //try
+            //{
                 if (both)
                 {
                     solutions[0]();
@@ -59,11 +59,11 @@ namespace advent2024
                 {
                     solutions[0]();
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error running Day {day}: {ex.Message}");
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"Error running Day {day}: {ex.Message}");
+            //}
         }
     }
 }
