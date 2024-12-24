@@ -674,7 +674,7 @@ namespace advent2024
             public GateType Type { get; }
             public Wire Input1 { get; }
             public Wire Input2 { get; }
-            public Wire Output { get; }
+            public Wire Output { get; set; }
 
             public Gate(Wire input1, Wire input2, Wire output, GateType type)
             {
