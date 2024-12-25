@@ -14,7 +14,7 @@ namespace advent2024.Days
 {
     public static class Day24
     {
-        private static readonly string InputFile = @"C:\aoc\2024\day24\input2.txt";
+        private static readonly string InputFile = @"C:\aoc\2024\day24\input.txt";
         private static readonly string OutputFile = @"C:\aoc\2024\day24\output.txt";
         public static void SolvePart1()
         {
@@ -27,6 +27,8 @@ namespace advent2024.Days
             stopwatch.Stop();
             Console.WriteLine($"24*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
+
+        // PT2 solution from: https://www.reddit.com/r/adventofcode/comments/1hla5ql/2024_day_24_part_2_a_guide_on_the_idea_behind_the/
         public static void SolvePart2()
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -34,17 +36,21 @@ namespace advent2024.Days
             Dictionary<string, Wire> wires;
             List<Gate> gates;
             GetWiresAndGates(InputFile, out wires, out gates);
-            //PrintZPaths(wires, gates);
-            long num1 = GetWiresValue(wires, 'x');
-            long num2 = GetWiresValue(wires, 'y');
-            long expectedResult = num1 + num2;
-            if (InputFile.Contains("test2.txt"))
-            {
-                expectedResult = num1 & num2;
-            }
+            //_ = GetGatesResult(wires, gates);
             int bitLength = wires.Count(w => w.Key.StartsWith("z"));
-            long currentResult = GetGatesResult(wires, gates);
-            GateAnalyzer.AnalyzeGateConnections(gates);
+            HashSet<Gate> faultyGates = FindFaultyGates(gates, bitLength); 
+            string result = string.Join(",", faultyGates.Select(g => g.Output.Name).OrderBy(n => n));
+            //PrintZPaths(wires, gates);
+            //long num1 = GetWiresValue(wires, 'x');
+            //long num2 = GetWiresValue(wires, 'y');
+            //long expectedResult = num1 + num2;
+            //if (InputFile.Contains("test2.txt"))
+            //{
+            //    expectedResult = num1 & num2;
+            //}
+            //int bitLength = wires.Count(w => w.Key.StartsWith("z"));
+            //long currentResult = GetGatesResult(wires, gates);
+            //GateAnalyzer.AnalyzeGateConnections(gates);
 
             //AnalyzeBitDifferences(expectedResult, currentResult, bitLength);
             //AnalyzeSequentially(wires, gates, expectedResult, bitLength);
@@ -52,7 +58,7 @@ namespace advent2024.Days
             //AnalyzeSwapEffects(wires, gates, expectedResult, bitLength);
             stopwatch.Stop();
             //int result = 0;
-            Console.WriteLine($"24*2 -- ({stopwatch.ElapsedMilliseconds} ms)");
+            Console.WriteLine($"24*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
 
         private static void GetWiresAndGates(string inputFile, out Dictionary<string, Wire> wires, out List<Gate> gates)
@@ -122,6 +128,73 @@ namespace advent2024.Days
             string reverseString = new string(binaryString.Reverse().ToArray());
             return Convert.ToInt64(reverseString, 2);
         }
+
+        private static HashSet<Gate> FindFaultyGates(List<Gate> gates, int bitLength)
+        {
+            HashSet<Gate> faultyGates = new();
+            foreach (Gate gate in gates)
+            {
+                string gateName = gate.Output.Name;
+                if (gateName.StartsWith("z"))
+                {
+                    int gateNum = int.Parse(gateName.Substring(1));
+                    if (gateNum != bitLength - 1 && gate.Type != GateType.XOR)
+                        faultyGates.Add(gate);
+                }
+                else
+                {
+                    if (!gate.Input1.Name.StartsWith("x") && !gate.Input1.Name.StartsWith("y")
+                        && !gate.Input2.Name.StartsWith("x") && !gate.Input2.Name.StartsWith("y") && gate.Type == GateType.XOR)
+                    {
+                        faultyGates.Add(gate);
+                    }
+                }
+                if (gate.Type == GateType.XOR &&
+                    ((gate.Input1.Name.StartsWith("x") || gate.Input2.Name.StartsWith("y"))
+                        || (gate.Input2.Name.StartsWith("x") || gate.Input1.Name.StartsWith("y"))))
+                {
+                    if (!(gate.Input1.Name == "x00" && gate.Input2.Name == "y00") &&
+                        !(gate.Input1.Name == "y00" && gate.Input2.Name == "x00"))
+                    {
+                        //Console.WriteLine($"Possible XOR faulty: {gate}");
+                        bool faulty = true;
+                        foreach (Gate g in gates)
+                        {
+                            if ((g.Input1.Name == gate.Output.Name || g.Input2.Name == gate.Output.Name) && g.Type == GateType.XOR)
+                            {
+                                faulty = false;
+                                //Console.WriteLine($"\t\tSaved by: {g}");
+                            }
+                        }
+                        if (faulty)
+                            faultyGates.Add(gate);
+                    }
+                }
+                if (gate.Type == GateType.AND &&
+                        ((gate.Input1.Name.StartsWith("x") || gate.Input2.Name.StartsWith("y"))
+                            || (gate.Input2.Name.StartsWith("x") || gate.Input1.Name.StartsWith("y"))))
+                {
+                    if (!(gate.Input1.Name == "x00" && gate.Input2.Name == "y00") &&
+                        !(gate.Input1.Name == "y00" && gate.Input2.Name == "x00"))
+                    {
+                        //Console.WriteLine($"Possible AND faulty: {gate}");
+                        bool faulty = true;
+                        foreach (Gate g in gates)
+                        {
+                            if ((g.Input1.Name == gate.Output.Name || g.Input2.Name == gate.Output.Name) && g.Type == GateType.OR)
+                            {
+                                //Console.WriteLine($"\t\tSaved by: {g}");
+                                faulty = false;
+                            }
+                        }
+                        if (faulty)
+                            faultyGates.Add(gate);
+                    }
+                }
+            }
+            return faultyGates;
+        }
+
 
         private static long GetWiresValue(Dictionary<string, Wire> wires, char c)
         {
@@ -394,7 +467,7 @@ namespace advent2024.Days
             var input2Gate = gates.FirstOrDefault(g => g.Output.Name == gate.Input2.Name);
             if (input2Gate != null)
             {
-                PrintGatePath(input2Gate, gates, indent + "  ", new HashSet<string>(visited), lines );
+                PrintGatePath(input2Gate, gates, indent + "  ", new HashSet<string>(visited), lines);
             }
         }
 
