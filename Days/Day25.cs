@@ -39,9 +39,9 @@ namespace advent2024.Days
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
             string[] lines = File.ReadAllLines(InputFile);
-            int result = 0;
+            string result = "Merry Christmas!";
             stopwatch.Stop();
-            Console.WriteLine($"25*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
+            Console.WriteLine($"25*2 -- {result}");
         }
 
         private static void GetLocksAndKeys(string inputFile, out List<int[]> locks, out List<int[]> keys, out int targetSum)
