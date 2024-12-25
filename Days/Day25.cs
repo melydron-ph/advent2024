@@ -18,8 +18,19 @@ namespace advent2024.Days
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             File.WriteAllText(OutputFile, string.Empty);
-            string[] lines = File.ReadAllLines(InputFile);
+            List<int[]> locks;
+            List<int[]> keys;
+            int targetSum;
+            GetLocksAndKeys(InputFile, out locks, out keys, out targetSum);
             int result = 0;
+            foreach (int[] l in locks)
+            {
+                foreach (int[] k in keys)
+                {
+                    if (LockKeyMatch(l, k, targetSum))
+                        result++;
+                }
+            }
             stopwatch.Stop();
             Console.WriteLine($"25*1 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
@@ -32,6 +43,68 @@ namespace advent2024.Days
             stopwatch.Stop();
             Console.WriteLine($"25*2 -- {result} ({stopwatch.ElapsedMilliseconds} ms)");
         }
+
+        private static void GetLocksAndKeys(string inputFile, out List<int[]> locks, out List<int[]> keys, out int targetSum)
+        {
+            string file = File.ReadAllText(inputFile);
+            string[] fileBlocks = file.Split(new string[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            locks = new();
+            keys = new();
+            targetSum = fileBlocks[0].Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Count() - 2;
+            foreach (string fileBlock in fileBlocks)
+            {
+                if (fileBlock[0] == '#')
+                {
+                    locks.Add(GetLock(fileBlock));
+                }
+                else
+                {
+                    keys.Add(GetKey(fileBlock));
+                }
+            }
+        }
+
+        private static int[] GetLock(string fileBlock)
+        {
+            string[] lines = fileBlock.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            int length = lines[0].Length;
+            int[] heights = new int[length];
+            for (int i = 1; i < lines.Count(); i++)
+            {
+                for (int j = 0; j < length; j++)
+                {
+                    if (lines[i][j] == '#')
+                        heights[j]++;
+                }
+            }
+            return heights;
+        }
+        private static int[] GetKey(string fileBlock)
+        {
+            string[] lines = fileBlock.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            int length = lines[0].Length;
+            int[] heights = new int[length];
+            for (int i = lines.Count() - 2; i >= 0; i--)
+            {
+                for (int j = 0; j < length; j++)
+                {
+                    if (lines[i][j] == '#')
+                        heights[j]++;
+                }
+            }
+            return heights;
+        }
+
+        private static bool LockKeyMatch(int[] l, int[] k, int target)
+        {
+            if (l.Length != k.Length) return false;
+            for (int i = 0; i < l.Length; i++)
+            {
+                if (l[i] + k[i] > target) return false;
+            }
+            return true;
+        }
+
     }
 
 }
